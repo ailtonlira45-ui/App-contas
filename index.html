@@ -111,10 +111,17 @@
         }
         .calendar-date.today.selected { outline-color: #fff; background: var(--accent); }
         .calendar-date.has-task::after {
-            content: ''; position: absolute; bottom: 4px; width: 5px; height: 5px;
-            border-radius: 50%; background: var(--accent2);
+            content: '📌';
+            position: absolute;
+            bottom: 1px;
+            right: 2px;
+            font-size: 9px;
+            line-height: 1;
         }
-        .calendar-date.today.has-task::after { background: #fff; }
+        .calendar-date.today.has-task::after {
+            content: '📍';
+            font-size: 10px;
+        }
 
         .filter-info {
             background: var(--surface); border-radius: var(--radius-sm);
@@ -421,7 +428,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const KEY = 'agenda_allan_v2';
+        const KEY = 'agenda_allan_v3';
         let tasks = [], dateFilter = null, editId = null, category = 'trabalho';
         let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
         let miniYear = new Date().getFullYear(), miniMonth = new Date().getMonth(), miniDates = [];
