@@ -1,798 +1,1348 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS - VIANORTESUL - Sistema de Controle de Viagens</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Agenda do Allan</title>
     <style>
         :root {
-            --primary: #888888;
-            --primary-dark: #555555;
-            --primary-light: #aaaaaa;
-            --accent: #b8860b;
-            --accent-light: #d4a843;
-            --success: #2ecc71;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --info: #3498db;
-            --glass-bg: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.10);
-            --gold: #c9a84c;
-            --gold-light: #e0c878;
+            --bg: rgba(10, 10, 15, 0.85);
+            --surface: rgba(22, 22, 30, 0.8);
+            --surface2: rgba(28, 28, 38, 0.7);
+            --surface3: rgba(35, 35, 48, 0.6);
+            --text: #e8e8ed;
+            --text2: #9a9aab;
+            --text3: #5c5c6e;
+            --accent: #7c6ff7;
+            --accent2: #a99bfa;
+            --accent-glow: rgba(124, 111, 247, 0.3);
+            --green: #00c896;
+            --green-bg: rgba(0, 200, 150, 0.12);
+            --red: #f07070;
+            --red-bg: rgba(240, 112, 112, 0.12);
+            --blue: #5b9cf5;
+            --blue-bg: rgba(91, 156, 245, 0.12);
+            --orange: #f5b84d;
+            --orange-bg: rgba(245, 184, 77, 0.12);
+            --pink: #f070a0;
+            --pink-bg: rgba(240, 112, 160, 0.12);
+            --yellow: #f5c842;
+            --yellow-bg: rgba(245, 200, 66, 0.15);
+            --border: rgba(255, 255, 255, 0.06);
+            --border2: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; overflow-x: hidden; }
         body {
-            min-height:100vh;
-            background:#0d0d0d;
-            color:#e0e0e0;
-            overflow-x:hidden;
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            letter-spacing: 0.2px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(ellipse at 50% 0%, rgba(124, 111, 247, 0.15) 0%, rgba(10, 10, 20, 0.95) 50%, rgba(5, 5, 12, 0.98) 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .animated-bg {
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background: 
-                radial-gradient(ellipse at 20% 50%, rgba(180,180,180,0.04) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(200,170,80,0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(120,120,120,0.04) 0%, transparent 50%),
-                linear-gradient(160deg, #0d0d0d 0%, #1a1a1a 30%, #141414 60%, #0f0f0f 100%);
-            background-size: 100% 100%;
-            z-index:-2;
-            animation: gradientShift 8s ease infinite;
+        .app {
+            width: 100%;
+            max-width: 440px;
+            padding: 0 16px;
+            padding-bottom: calc(100px + var(--safe-bottom));
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
-        .bg-particles { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; }
-        .particle {
-            position:absolute; border-radius:50%;
-            background: radial-gradient(circle, rgba(200,170,100,0.08), transparent);
-            animation: float 20s infinite;
-        }
-        .ns-watermark {
-            position:fixed; font-size:14vw; font-weight:900;
-            color: rgba(255,255,255,0.012); top:50%; left:50%;
-            transform: translate(-50%,-50%); letter-spacing:18px;
-            pointer-events:none; z-index:-1;
-            text-shadow: 0 0 100px rgba(180,160,120,0.06);
-            white-space: nowrap;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .icon { display:inline-block; width:20px; height:20px; vertical-align:middle; }
-        .icon-lg { width:28px; height:28px; }
-        .icon-sm { width:14px; height:14px; }
-
-        @keyframes gradientShift { 0%{opacity:0.95;}50%{opacity:1;}100%{opacity:0.95;} }
-        @keyframes float {
-            0%,100%{transform:translateY(0)translateX(0)scale(1);opacity:0.4;}
-            25%{transform:translateY(-120px)translateX(60px)scale(1.6);opacity:0.08;}
-            50%{transform:translateY(-60px)translateX(-40px)scale(0.7);opacity:0.15;}
-            75%{transform:translateY(-180px)translateX(30px)scale(1.3);opacity:0.04;}
-        }
-
+        /* Header */
         .header {
-            background: rgba(15,15,15,0.75); backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px); padding:0 30px;
-            position:sticky; top:0; z-index:100;
-            border-bottom:1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 4px 40px rgba(0,0,0,0.6);
+            padding: 24px 4px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: transparent;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
-        .nav {
-            display:flex; justify-content:space-between; align-items:center;
-            max-width:1500px; margin:0 auto; height:68px;
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .logo {
-            font-size:1.7rem; font-weight:800; letter-spacing:4px;
-            background: linear-gradient(135deg,#e0d5c0 0%,#c9a84c 30%,#e0c878 60%,#b8963c 100%);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-            cursor:pointer; filter: drop-shadow(0 0 20px rgba(200,170,80,0.3));
-            transition:0.3s; font-family: 'Outfit', sans-serif;
-            display:flex; align-items:center; gap:10px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .logo:hover { filter: drop-shadow(0 0 35px rgba(220,190,100,0.5)); transform:scale(1.04); }
-        .menu { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-        .menu-btn {
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,0.08);
-            color:#ccc; padding:10px 20px; border-radius:12px; cursor:pointer;
-            transition:0.3s; font-weight:500; white-space:nowrap; font-size:0.82rem;
-            letter-spacing:0.6px; font-family: 'Inter', sans-serif;
-            display:flex; align-items:center; gap:8px;
+        .header-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c6ff7, #a99bfa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 20px rgba(124, 111, 247, 0.35);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
-        .menu-btn:hover {
-            background: rgba(200,170,100,0.12); border-color: rgba(200,170,100,0.3);
-            transform:translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-            color:#e0d5c0;
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
         }
-        .menu-btn.active {
-            background: rgba(200,170,100,0.18); border-color: rgba(200,170,100,0.5);
-            box-shadow: 0 0 25px rgba(200,170,100,0.15), inset 0 0 20px rgba(200,170,100,0.05);
-            color:#e0d5c0;
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text2);
+            font-weight: 500;
         }
-        .user-info {
-            display:flex; align-items:center; gap:12px; margin-left:25px;
-            padding-left:25px; border-left:1px solid rgba(255,255,255,0.15);
-            cursor:pointer; transition:0.3s;
+        .clock {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 10px 16px;
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-        .user-info:hover { opacity:0.8; }
-        .user-avatar {
-            width:40px; height:40px; border-radius:50%;
-            background: linear-gradient(135deg, #c9a84c, #8b6914);
-            display:flex; align-items:center; justify-content:center;
-            font-weight:700; font-size:1.1rem;
-            box-shadow: 0 0 20px rgba(200,170,80,0.3);
-            font-family: 'Outfit', sans-serif;
+        .clock-time {
+            font-size: 19px;
+            font-weight: 700;
+            font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+            color: var(--accent2);
+            letter-spacing: 0.5px;
+        }
+        .clock-sec {
+            font-size: 11px;
+            color: var(--text3);
+            font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+            font-weight: 500;
         }
 
+        /* Calendar */
+        .calendar {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin: 4px 0 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .calendar-month {
+            font-weight: 800;
+            font-size: 18px;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+        .calendar-nav {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.15s;
+        }
+        .calendar-nav:hover { background: var(--surface3); }
+        .calendar-nav:active { transform: scale(0.9); background: var(--accent); border-color: var(--accent); }
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+        .calendar-weekday {
+            text-align: center;
+            font-size: 12px;
+            color: #b0b0c0;
+            font-weight: 700;
+            padding: 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .calendar-dates {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-date {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            color: #e0e0e8;
+        }
+        .calendar-date:hover { background: var(--surface3); }
+        .calendar-date:active { transform: scale(0.88); }
+        .calendar-date.other { color: #4a4a5a; opacity: 0.5; }
+        .calendar-date.today {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        .calendar-date.selected {
+            outline: 3px solid var(--accent2);
+            outline-offset: -2px;
+            box-shadow: 0 0 24px var(--accent-glow);
+            background: rgba(124, 111, 247, 0.25);
+            font-weight: 700;
+        }
+        .calendar-date.today.selected {
+            outline-color: #fff;
+            background: var(--accent);
+        }
+        .calendar-date.has-task::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent2);
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+        .calendar-date.today.has-task::after { background: #fff; }
+
+        /* Selected date display */
+        .selected-date-display {
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--accent);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .selected-date-display .date-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+        .selected-date-display .date-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+        .selected-date-display .clear-date-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border2);
+            background: var(--surface2);
+            color: var(--text2);
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .selected-date-display .clear-date-btn:hover {
+            background: var(--red-bg);
+            color: var(--red);
+            border-color: var(--red);
+        }
+
+        /* Progress */
+        .progress-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .progress-ring {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+        .progress-ring svg { transform: rotate(-90deg); }
+        .progress-ring-bg { fill: none; stroke: var(--surface3); stroke-width: 5; }
+        .progress-ring-fill {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 5;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .progress-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 17px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .progress-info-title { font-weight: 700; font-size: 15px; }
+        .progress-info-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+        /* Tasks */
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #b0b0c0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .task {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 16px;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .task::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: transparent;
+            border-radius: 0 3px 3px 0;
+            transition: background 0.2s;
+        }
+        .task:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-1px);
+            background: var(--surface2);
+        }
+        .task:active { transform: scale(0.985); }
+        .task.done { opacity: 0.5; }
+        .task.done .task-name { text-decoration: line-through; color: var(--text3); }
+        .task.today-task { border-color: rgba(245, 200, 66, 0.35); box-shadow: 0 4px 20px rgba(245, 200, 66, 0.12); }
+        .task.today-task::before { background: #f5c842; }
+        .task-check {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2.5px solid var(--border2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.25s;
+            background: var(--surface2);
+        }
+        .task-check:hover { border-color: var(--green); }
+        .task.done .task-check {
+            background: var(--green);
+            border-color: var(--green);
+            color: #000;
+            box-shadow: 0 4px 16px rgba(0, 200, 150, 0.3);
+        }
+        .task-body { flex: 1; min-width: 0; }
+        .task-name { font-weight: 600; font-size: 14px; letter-spacing: -0.2px; }
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 3px;
+            font-size: 11px;
+            color: var(--text2);
+            flex-wrap: wrap;
+        }
+        .task-meta .date-highlight {
+            color: var(--accent2);
+            font-weight: 600;
+        }
+        .task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .dot-trabalho { background: var(--blue); }
+        .dot-estudo { background: #f07070; }
+        .dot-exercício { background: var(--green); }
+        .dot-pessoal { background: var(--pink); }
+        .task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .task-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            background: var(--surface2);
+            color: var(--text2);
+            transition: all 0.15s;
+        }
+        .task-btn:hover { background: var(--surface3); color: var(--text); }
+        .task-btn:active { transform: scale(0.85); }
+        .task-btn.del:hover { background: var(--red-bg); color: var(--red); }
+
+        /* Empty */
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text3);
+        }
+        .empty-icon {
+            font-size: 56px;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+        .empty-text { font-size: 14px; font-weight: 500; }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: calc(28px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c6ff7, #a99bfa);
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 8px 35px rgba(124, 111, 247, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .fab:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 12px 40px rgba(124, 111, 247, 0.55);
+        }
+        .fab:active {
+            transform: translateX(-50%) scale(0.9);
+            box-shadow: 0 4px 16px rgba(124, 111, 247, 0.3);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 30;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
         .modal {
-            display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.88); backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px); z-index:1000;
-            justify-content:center; align-items:center;
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            padding: 24px 20px calc(24px + var(--safe-bottom));
+            width: 100%;
+            max-width: 440px;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 -8px 50px rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
-        .modal.active { display:flex; }
-        .modal-content {
-            background: rgba(18,18,18,0.92); backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px); border:1px solid rgba(255,255,255,0.1);
-            padding:40px; border-radius:24px; width:90%; max-width:420px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.8), 0 0 50px rgba(200,170,100,0.06);
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--surface3);
+            border-radius: 2px;
+            margin: 0 auto 20px;
         }
-        .modal-content h2 { margin-bottom:25px; text-align:center; letter-spacing:1.5px; font-weight:700; font-family: 'Outfit', sans-serif; display:flex; align-items:center; justify-content:center; gap:10px; }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: -0.2px;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #b0b0c0;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--surface2);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+            background: var(--surface3);
+        }
+        .form-input::placeholder { color: var(--text3); }
 
-        .main-content { max-width:1500px; margin:30px auto; padding:0 30px; }
-        .page { display:none; }
-        .page.active { display:block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);} }
+        /* Mini calendar no modal */
+        .mini-cal {
+            background: var(--surface2);
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .mini-cal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .mini-cal-month { font-weight: 700; font-size: 15px; color: #fff; }
+        .mini-cal-nav {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface3);
+            border: 1px solid var(--border2);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.15s;
+        }
+        .mini-cal-nav:active { background: var(--accent); border-color: var(--accent); transform: scale(0.9); }
+        .mini-cal-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            margin-bottom: 5px;
+        }
+        .mini-cal-day {
+            text-align: center;
+            font-size: 11px;
+            color: #b0b0c0;
+            font-weight: 700;
+            padding: 5px 0;
+            text-transform: uppercase;
+        }
+        .mini-cal-dates {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .mini-cal-date {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.12s;
+            color: #e0e0e8;
+        }
+        .mini-cal-date:hover { background: var(--surface3); }
+        .mini-cal-date:active { transform: scale(0.85); }
+        .mini-cal-date.other { color: #4a4a5a; opacity: 0.4; }
+        .mini-cal-date.today {
+            background: var(--accent);
+            color: #fff;
+            font-weight: 800;
+            box-shadow: 0 2px 12px var(--accent-glow);
+        }
+        .mini-cal-date.sel {
+            background: rgba(124, 111, 247, 0.3);
+            outline: 3px solid var(--accent2);
+            outline-offset: -2px;
+            font-weight: 700;
+        }
+        .mini-cal-date.today.sel {
+            outline-color: #fff;
+            background: var(--accent);
+        }
+        .mini-cal-selected {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--accent2);
+            padding: 8px;
+            background: rgba(124, 111, 247, 0.06);
+            border-radius: 10px;
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            font-weight: 600;
+        }
+        .mini-cal-tag {
+            background: rgba(124, 111, 247, 0.18);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .mini-cal-tag .remove {
+            cursor: pointer;
+            font-size: 13px;
+            opacity: 0.6;
+            padding: 1px 3px;
+            transition: opacity 0.15s;
+        }
+        .mini-cal-tag .remove:hover { opacity: 1; }
 
-        .glass-container {
-            background: rgba(255,255,255,0.025); backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px); border:1px solid rgba(255,255,255,0.06);
-            padding:35px; border-radius:24px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-            margin-bottom:30px; transition:0.3s;
+        /* Chips */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
+        .chip {
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: var(--surface2);
+            color: var(--text2);
+            transition: all 0.2s;
+        }
+        .chip:hover { border-color: var(--border2); }
+        .chip.active { border-color: var(--accent); color: #fff; background: rgba(124, 111, 247, 0.12); }
+        .chip.work { color: var(--blue); background: var(--blue-bg); }
+        .chip.work.active { border-color: var(--blue); color: var(--blue); background: rgba(91, 156, 245, 0.18); }
+        .chip.study { color: #f07070; background: rgba(240, 112, 112, 0.1); }
+        .chip.study.active { border-color: #f07070; color: #f07070; }
+        .chip.exercise { color: var(--green); background: var(--green-bg); }
+        .chip.exercise.active { border-color: var(--green); color: var(--green); }
+        .chip.personal { color: var(--pink); background: var(--pink-bg); }
+        .chip.personal.active { border-color: var(--pink); color: var(--pink); }
 
-        h2 {
-            margin-bottom:25px; text-transform:uppercase; letter-spacing:2.5px;
-            display:flex; align-items:center; gap:12px;
-            font-size:1.4rem; font-weight:700; opacity:0.95;
-            font-family: 'Outfit', sans-serif;
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
         }
-        h3 { margin-bottom:20px; display:flex; align-items:center; gap:10px; font-weight:600; opacity:0.9; font-family: 'Outfit', sans-serif; }
-        .grid-2 { display:grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap:30px; }
-        .grid-4 { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:22px; }
-        .form-group { margin-bottom:18px; }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s;
+            letter-spacing: -0.2px;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary {
+            background: linear-gradient(135deg, #7c6ff7, #a99bfa);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        .btn-primary:hover { box-shadow: 0 6px 28px var(--accent-glow); }
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border2);
+        }
+        .btn-secondary:hover { background: var(--surface3); }
 
-        label {
-            display:block; margin-bottom:7px; font-size:0.78rem;
-            font-weight:600; color: rgba(255,255,255,0.75); letter-spacing:0.6px;
-            font-family: 'Inter', sans-serif;
+        .clear-btn {
+            display: block;
+            margin: 0 auto 20px;
+            padding: 11px 22px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border2);
+            background: var(--surface);
+            color: var(--text2);
+            font-family: inherit;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-        input, select, textarea {
-            width:100%; padding:13px 18px; border-radius:14px;
-            border:1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px); color:#e0e0e0;
-            font-size:0.9rem; transition:0.3s; outline:none;
-            font-family: 'Inter', sans-serif;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: rgba(200,170,100,0.4); background: rgba(255,255,255,0.06);
-            box-shadow: 0 0 25px rgba(200,170,100,0.1), inset 0 0 15px rgba(200,170,100,0.03);
-        }
-        input::placeholder { color: rgba(255,255,255,0.25); }
-        select { cursor:pointer; background: rgba(15,15,15,0.5); }
-        select option { background:#1a1a1a; color:#e0e0e0; }
-        input[readonly], select[disabled], textarea[readonly] { 
-            background: rgba(255,255,255,0.015) !important; cursor:not-allowed; opacity:0.45; 
-            border-color: rgba(255,255,255,0.03) !important; color:#777 !important;
-        }
-        .edit-input { background: rgba(0,0,0,0.5) !important; border-color: rgba(243,156,18,0.35) !important; color:#fff !important; }
-        .edit-input[readonly], .edit-input[disabled] { 
-            background: rgba(0,0,0,0.3) !important; opacity:0.45 !important; cursor:not-allowed !important;
-            border-color: rgba(255,255,255,0.03) !important; color:#777 !important;
-        }
-        .campo-bloqueado-label { font-size:0.65rem; opacity:0.5; margin-left:4px; font-weight:400; text-transform:none; }
+        .clear-btn:hover { background: var(--red-bg); color: var(--red); border-color: var(--red); }
 
-        .btn-group { display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; }
-        button {
-            padding:12px 24px; border:none; border-radius:14px; cursor:pointer;
-            font-weight:600; transition:0.3s;
-            display:flex; align-items:center; gap:7px; justify-content:center;
-            letter-spacing:0.7px; font-size:0.8rem;
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            font-family: 'Inter', sans-serif;
-        }
-        .btn-primary { background: linear-gradient(135deg, rgba(160,140,100,0.8), rgba(100,80,50,0.8)); color:#fff; border:1px solid rgba(255,255,255,0.1); }
-        .btn-success { background: linear-gradient(135deg, rgba(46,204,113,0.8), rgba(39,174,96,0.8)); color:#fff; border:1px solid rgba(255,255,255,0.1); }
-        .btn-danger { background: linear-gradient(135deg, rgba(231,76,60,0.8), rgba(192,57,43,0.8)); color:#fff; border:1px solid rgba(255,255,255,0.1); }
-        .btn-warning { background: linear-gradient(135deg, rgba(243,156,18,0.8), rgba(211,130,0,0.8)); color:#fff; border:1px solid rgba(255,255,255,0.1); }
-        .btn-info { background: linear-gradient(135deg, rgba(52,152,219,0.8), rgba(41,128,185,0.8)); color:#fff; border:1px solid rgba(255,255,255,0.1); }
-        .btn-outline { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.12); color:#ccc; }
-        .btn-whatsapp { background: linear-gradient(135deg, rgba(37,211,102,0.85), rgba(30,180,70,0.85)); color:#fff; border:1px solid rgba(37,211,102,0.3); }
-        .btn-iniciar { background: linear-gradient(135deg, rgba(46,204,113,0.7), rgba(35,160,85,0.7)); color:#fff; border:1px solid rgba(46,204,113,0.3); }
-        .btn-finalizar { background: linear-gradient(135deg, rgba(231,76,60,0.7), rgba(180,50,35,0.7)); color:#fff; border:1px solid rgba(231,76,60,0.3); }
-        .btn-status { 
-            background: linear-gradient(135deg, rgba(241,196,15,0.7), rgba(200,160,10,0.7)); 
-            color:#1a1a1a; border:1px solid rgba(241,196,15,0.3); font-weight:700;
-        }
-        button:hover { transform:translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.05); }
-        button:active { transform:translateY(-1px); }
-
-        .search-container { margin-bottom: 25px; position: relative; }
-        .search-input {
-            width: 100%; padding: 16px 50px 16px 22px;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px; color: #e0e0e0; font-size: 1rem; transition: 0.3s;
-        }
-        .search-input:focus {
-            border-color: rgba(200,170,100,0.4); background: rgba(255,255,255,0.05);
-            box-shadow: 0 0 30px rgba(200,170,100,0.12);
-        }
-        .search-icon { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
-
-        .card {
-            background: rgba(255,255,255,0.025); backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px); border:1px solid rgba(255,255,255,0.06);
-            border-radius:16px; padding:20px; margin-bottom:14px; transition:0.3s;
-        }
-        .card:hover {
-            background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12);
-            transform:translateX(5px); box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-        }
-        .card.editando {
-            border-color: rgba(243,156,18,0.35); background: rgba(243,156,18,0.05);
-            box-shadow: 0 0 30px rgba(243,156,18,0.06);
-        }
-        .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
-        .badge {
-            padding:6px 12px; border-radius:20px; font-size:0.65rem;
-            font-weight:700; text-transform:uppercase; letter-spacing:1px;
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            display:inline-flex; align-items:center; gap:5px;
-        }
-        .badge-ida { background: rgba(52,152,219,0.5); color:#fff; border:1px solid rgba(52,152,219,0.3); }
-        .badge-volta { background: rgba(155,89,182,0.5); color:#fff; border:1px solid rgba(155,89,182,0.3); }
-        .badge-admin { background: rgba(200,160,60,0.5); color:#1a1a1a; border:1px solid rgba(200,160,60,0.3); }
-        .badge-motorista { background: rgba(46,204,113,0.5); color:#fff; border:1px solid rgba(46,204,113,0.3); }
-        .badge-status { background: rgba(241,196,15,0.5); color:#1a1a1a; border:1px solid rgba(241,196,15,0.3); animation: pulse-status 2.5s infinite; }
-        .badge-concluida { background: rgba(46,204,113,0.5); color:#fff; border:1px solid rgba(46,204,113,0.3); }
-        @keyframes pulse-status { 0%,100%{box-shadow:0 0 10px rgba(241,196,15,0.15);}50%{box-shadow:0 0 20px rgba(241,196,15,0.3);} }
-        .rota { display:flex; align-items:center; gap:14px; margin:10px 0; font-size:1.05rem; }
-        .info-text { font-size:0.8rem; opacity:0.65; margin-top:10px; }
-        .auto-badge {
-            background: rgba(46,204,113,0.12); border:1px solid rgba(46,204,113,0.25);
-            padding:4px 10px; border-radius:14px; font-size:0.6rem; font-weight:700;
-            display:inline-flex; align-items:center; gap:5px; letter-spacing:0.6px;
-        }
-        .linked-badge {
-            background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-            padding:6px 12px; border-radius:10px; font-size:0.75rem; margin-top:8px; display:inline-block;
-        }
-
-        .table-container { overflow-x:auto; }
-        table {
-            width:100%; border-collapse:collapse; margin-top:18px;
-            background: rgba(255,255,255,0.015); border-radius:14px; overflow:hidden;
-        }
-        th, td { padding:14px 18px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.04); }
-        th { background: rgba(255,255,255,0.03); font-weight:700; text-transform:uppercase; font-size:0.7rem; letter-spacing:1px; font-family: 'Inter', sans-serif; }
-        tr:hover { background: rgba(255,255,255,0.015); }
-
+        /* Toast */
         .toast {
-            position:fixed; top:20px; right:20px; padding:16px 28px; border-radius:16px;
-            animation: slideIn 0.35s, slideOut 0.35s 2.5s forwards; z-index:1000;
-            font-weight:600; color:#fff; backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px); font-size:0.85rem;
-            font-family: 'Inter', sans-serif;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: rgba(30, 30, 40, 0.95);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            z-index: 50;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
-        .toast-success { background: rgba(46,204,113,0.8); border:1px solid rgba(46,204,113,0.4); }
-        .toast-error { background: rgba(231,76,60,0.8); border:1px solid rgba(231,76,60,0.4); }
-        .toast-info { background: rgba(52,152,219,0.8); border:1px solid rgba(52,152,219,0.4); }
-        @keyframes slideIn { from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;} }
-        @keyframes slideOut { from{transform:translateX(0);opacity:1;}to{transform:translateX(120%);opacity:0;} }
+        .toast.show { transform: translateX(-50%) translateY(0); }
 
-        .mensagem-erro { color:#ff6b6b; font-size:0.75rem; margin-top:5px; display:none; }
-        .mensagem-erro.visivel { display:block; }
-
-        .modal-trocar-motorista { max-width:480px; }
-        .motorista-option {
-            display:flex; align-items:center; gap:14px; padding:16px; margin-bottom:10px;
-            background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);
-            border-radius:14px; cursor:pointer; transition:0.3s;
-        }
-        .motorista-option:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); }
-        .motorista-option.selecionado { background: rgba(46,204,113,0.08); border-color: rgba(46,204,113,0.4); box-shadow: 0 0 20px rgba(46,204,113,0.06); }
-
-        .dash-card {
-            background: rgba(255,255,255,0.025); backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px); border:1px solid rgba(255,255,255,0.06);
-            border-radius:18px; padding:28px; text-align:center; transition:0.3s; cursor:pointer;
-        }
-        .dash-card:hover {
-            background: rgba(255,255,255,0.05); border-color: rgba(200,170,100,0.2);
-            transform:translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-        }
-        .dash-icon { margin-bottom:14px; display:flex; justify-content:center; }
-        .dash-numero { font-size:2.8rem; font-weight:900; letter-spacing:1px; font-family: 'Outfit', sans-serif; }
-        .dash-label { font-size:0.85rem; opacity:0.65; margin-top:8px; text-transform:uppercase; letter-spacing:1.2px; font-family: 'Inter', sans-serif; }
-        .dash-detalhe { font-size:0.7rem; opacity:0.45; margin-top:10px; }
-        .no-results { text-align:center; padding:40px 20px; opacity:0.45; font-style:italic; display:none; }
-
-        @media (max-width:768px) {
-            .grid-2, .grid-4 { grid-template-columns:1fr; }
-            .nav { flex-wrap:wrap; height:auto; padding:14px 0; }
-            .menu { overflow-x:auto; width:100%; margin-top:10px; padding-bottom:6px; }
-            .user-info { margin-top:10px; padding-left:0; border-left:none; width:100%; justify-content:flex-end; }
+        @media (min-width: 440px) {
+            .app {
+                border-left: 1px solid var(--border);
+                border-right: 1px solid var(--border);
+                box-shadow: 0 0 80px rgba(0,0,0,0.4);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="animated-bg"></div>
-    <div class="bg-particles" id="particles"></div>
-    <div class="ns-watermark">VIANORTESUL</div>
-
-    <!-- Ícones SVG -->
-    <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
-        <symbol id="ic-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
-        <symbol id="ic-bus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/><line x1="7" y1="4" x2="7" y2="10"/><line x1="17" y1="4" x2="17" y2="10"/></symbol>
-        <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
-        <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-        <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></symbol>
-        <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
-        <symbol id="ic-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14v-4H5v4z"/><path d="M16 7l3 6H5l3-6"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/><line x1="3" y1="14" x2="5" y2="14"/><line x1="19" y1="14" x2="21" y2="14"/></symbol>
-        <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/><circle cx="12" cy="16" r="1"/></symbol>
-        <symbol id="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
-        <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></symbol>
-        <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
-        <symbol id="ic-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></symbol>
-        <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></symbol>
-        <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-        <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
-        <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
-        <symbol id="ic-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
-        <symbol id="ic-whatsapp" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></symbol>
-        <symbol id="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
-        <symbol id="ic-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></symbol>
-        <symbol id="ic-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
-        <symbol id="ic-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-    </svg>
-
-    <!-- Modal Login -->
-    <div id="modalLogin" class="modal active">
-        <div class="modal-content">
-            <h2><svg class="icon icon-lg" style="color:#c9a84c;"><use href="#ic-bus"/></svg> NS VIANORTESUL</h2>
-            <p style="text-align:center;margin-bottom:22px;opacity:0.6;font-size:0.9rem;">Sistema de Controle de Viagens</p>
-            <div class="form-group">
-                <label><svg class="icon icon-sm"><use href="#ic-user"/></svg> Usuário</label>
-                <input type="text" id="loginUsuario" placeholder="Seu nome de usuário" autocomplete="off">
-                <div class="mensagem-erro" id="erroLogin"></div>
-            </div>
-            <div class="form-group">
-                <label><svg class="icon icon-sm"><use href="#ic-lock"/></svg> Senha</label>
-                <input type="password" id="loginSenha" placeholder="Sua senha" autocomplete="off">
-            </div>
-            <button class="btn-primary" onclick="fazerLogin()" style="width:100%;">
-                <svg class="icon"><use href="#ic-logout"/></svg> Entrar
-            </button>
-            <p style="text-align:center;margin-top:18px;opacity:0.5;font-size:0.75rem;">Admin: admin / admin123 | Motorista: motorista1 / 123456</p>
-        </div>
-    </div>
-
-    <!-- Modal Trocar Motorista -->
-    <div id="modalTrocarMotorista" class="modal">
-        <div class="modal-content modal-trocar-motorista">
-            <h2><svg class="icon icon-lg"><use href="#ic-user"/></svg> Trocar Motorista</h2>
-            <p style="margin-bottom:18px;opacity:0.6;">Selecione o novo motorista:</p>
-            <div id="listaMotoristasTroca"></div>
-            <div class="btn-group">
-                <button class="btn-success" onclick="confirmarTrocaMotorista()" style="width:100%;"><svg class="icon"><use href="#ic-check"/></svg> Confirmar</button>
-                <button class="btn-outline" onclick="fecharModalTrocarMotorista()" style="width:100%;"><svg class="icon"><use href="#ic-x"/></svg> Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Trocar Senha -->
-    <div id="modalTrocarSenha" class="modal">
-        <div class="modal-content">
-            <h2><svg class="icon icon-lg"><use href="#ic-lock"/></svg> Trocar Senha</h2>
-            <div class="form-group"><label>Usuário</label><select id="trocaSenhaUsuario"></select></div>
-            <div class="form-group"><label>Nova Senha</label><input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres"><div class="mensagem-erro" id="erroNovaSenha"></div></div>
-            <div class="form-group"><label>Confirmar Senha</label><input type="password" id="confirmarNovaSenha" placeholder="Repita a senha"><div class="mensagem-erro" id="erroConfirmarNovaSenha"></div></div>
-            <div class="btn-group">
-                <button class="btn-success" onclick="confirmarTrocaSenha()" style="width:100%;"><svg class="icon"><use href="#ic-check"/></svg> Trocar Senha</button>
-                <button class="btn-outline" onclick="fecharModalTrocarSenha()" style="width:100%;"><svg class="icon"><use href="#ic-x"/></svg> Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <header class="header">
-        <nav class="nav">
-            <div class="logo" onclick="mudarPagina('dashboard')">
-                <svg class="icon icon-lg" style="width:26px;height:26px;"><use href="#ic-bus"/></svg>
-                NS VIANORTESUL
-            </div>
-            <div class="menu" id="menuPrincipal">
-                <button class="menu-btn active" onclick="mudarPagina('dashboard')"><svg class="icon"><use href="#ic-dashboard"/></svg> Dashboard</button>
-                <button class="menu-btn" onclick="mudarPagina('viagens')"><svg class="icon"><use href="#ic-bus"/></svg> Viagens</button>
-                <button class="menu-btn admin-only" onclick="mudarPagina('cadastro')"><svg class="icon"><use href="#ic-plus"/></svg> Nova</button>
-                <button class="menu-btn admin-only" onclick="mudarPagina('veiculos')"><svg class="icon"><use href="#ic-car"/></svg> Veículos</button>
-                <button class="menu-btn admin-only" onclick="mudarPagina('motoristas')"><svg class="icon"><use href="#ic-user"/></svg> Motoristas</button>
-                <button class="menu-btn admin-only" onclick="mudarPagina('admins')"><svg class="icon"><use href="#ic-users"/></svg> Admins</button>
-                <button class="menu-btn admin-only" onclick="abrirModalTrocarSenha()"><svg class="icon"><use href="#ic-lock"/></svg> Senha</button>
-            </div>
-            <div class="user-info" id="userInfo" onclick="mostrarModalLogin()">
-                <div class="user-avatar" id="userAvatar">?</div>
-                <div><div style="font-weight:600;font-size:0.85rem;" id="userName">Não logado</div><div style="font-size:0.65rem;opacity:0.6;" id="userNivel"></div></div>
-            </div>
-        </nav>
-    </header>
-
-    <div class="main-content">
-        <div id="page-dashboard" class="page active">
-            <div class="glass-container">
-                <h2><svg class="icon icon-lg"><use href="#ic-dashboard"/></svg> Painel de Controle</h2>
-                <p style="margin-bottom:28px;opacity:0.6;">Resumo geral do sistema NS VIANORTESUL</p>
-                <div class="grid-4" id="dashboardCards"></div>
-                <h3 style="margin-top:40px;"><svg class="icon"><use href="#ic-bus"/></svg> Últimas Viagens</h3>
-                <div class="grid-2" id="ultimasViagens"></div>
-            </div>
-        </div>
-
-        <div id="page-viagens" class="page">
-            <div class="glass-container">
-                <h2><svg class="icon icon-lg"><use href="#ic-bus"/></svg> Histórico de Viagens</h2>
-                <div class="search-container">
-                    <input type="text" class="search-input" id="buscaViagens" placeholder="Buscar por origem, destino, motorista, veículo..." oninput="filtrarViagens()">
-                    <span class="search-icon"><svg class="icon" style="width:22px;height:22px;"><use href="#ic-search"/></svg></span>
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-row">
+                <div class="header-left">
+                    <div class="header-avatar">📋</div>
+                    <div>
+                        <div class="header-title">Agenda do Allan</div>
+                        <div class="header-subtitle" id="headerDate"></div>
+                    </div>
                 </div>
-                <div class="grid-2">
-                    <div>
-                        <h3><svg class="icon" style="color:#3498db;"><use href="#ic-arrow-right"/></svg> Viagens de IDA <span id="contadorIda" style="font-size:0.7rem;opacity:0.5;"></span></h3>
-                        <div id="listaViagensIda"></div>
-                        <p class="no-results" id="semResultadosIda">Nenhuma viagem de ida encontrada</p>
-                    </div>
-                    <div>
-                        <h3><svg class="icon" style="color:#9b59b6;transform:rotate(180deg);"><use href="#ic-arrow-right"/></svg> Viagens de VOLTA <span id="contadorVolta" style="font-size:0.7rem;opacity:0.5;"></span></h3>
-                        <div id="listaViagensVolta"></div>
-                        <p class="no-results" id="semResultadosVolta">Nenhuma viagem de volta encontrada</p>
-                    </div>
+                <div class="clock">
+                    <span class="clock-time" id="clockTime">00:00</span>
+                    <span class="clock-sec" id="clockSec">00</span>
                 </div>
             </div>
         </div>
-        
-        <div id="page-cadastro" class="page"><div class="glass-container" id="cadastroContainer"></div></div>
-        <div id="page-veiculos" class="page"><div class="glass-container" id="veiculosContainer"></div></div>
-        <div id="page-motoristas" class="page"><div class="glass-container" id="motoristasContainer"></div></div>
-        <div id="page-admins" class="page"><div class="glass-container" id="adminsContainer"></div></div>
+
+        <!-- Calendário principal -->
+        <div class="calendar">
+            <div class="calendar-header">
+                <button class="calendar-nav" id="calPrev">◀</button>
+                <div class="calendar-month" id="calMonth"></div>
+                <button class="calendar-nav" id="calNext">▶</button>
+            </div>
+            <div class="calendar-weekdays" id="calWeekdays"></div>
+            <div class="calendar-dates" id="calDates"></div>
+        </div>
+
+        <!-- Data selecionada -->
+        <div class="selected-date-display" id="selectedDateDisplay" style="display:none;">
+            <div class="date-label">📅 Data selecionada</div>
+            <div class="date-value" id="selectedDateValue"></div>
+            <button class="clear-date-btn" id="clearDateBtn">✕ Mostrar todas</button>
+        </div>
+
+        <!-- Progresso -->
+        <div class="progress-card">
+            <div class="progress-ring">
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#7c6ff7;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#a99bfa;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="progress-ring-bg" cx="30" cy="30" r="25"/>
+                    <circle class="progress-ring-fill" id="progressFill" cx="30" cy="30" r="25"/>
+                </svg>
+                <div class="progress-ring-text" id="progressPct">0%</div>
+            </div>
+            <div>
+                <div class="progress-info-title" id="progressTitle">Selecione uma data</div>
+                <div class="progress-info-sub" id="progressSub">Toque em um dia no calendário</div>
+            </div>
+        </div>
+
+        <!-- Lista de tarefas -->
+        <div class="section-title" id="sectionTitle">📌 Atividades</div>
+        <div class="task-list" id="taskList"></div>
+        <button class="clear-btn" id="clearDone">🧹 Limpar concluídas</button>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- FAB -->
+    <button class="fab" id="fab">+</button>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modalSheet">
+            <div class="modal-handle"></div>
+            <div class="modal-title" id="modalTitle">Nova Atividade</div>
+            <div id="editBadge" style="display:none;text-align:center;margin-bottom:14px;font-size:11px;color:var(--accent2);font-weight:600;background:rgba(124,111,247,0.1);padding:6px 14px;border-radius:20px;">✏️ Editando atividade</div>
+            <div class="form-group">
+                <label class="form-label">📝 O que vai fazer?</label>
+                <input type="text" class="form-input" id="inputName" placeholder="Ex: Academia, reunião..." autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label class="form-label">📅 Selecione os dias (toque para marcar/desmarcar)</label>
+                <div class="mini-cal">
+                    <div class="mini-cal-header">
+                        <button class="mini-cal-nav" id="miniCalPrev">◀</button>
+                        <div class="mini-cal-month" id="miniCalMonth"></div>
+                        <button class="mini-cal-nav" id="miniCalNext">▶</button>
+                    </div>
+                    <div class="mini-cal-days" id="miniCalDays"></div>
+                    <div class="mini-cal-dates" id="miniCalDates"></div>
+                    <div class="mini-cal-selected" id="miniCalSelected">📅 Nenhum dia selecionado</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">📂 Categoria</label>
+                <div class="chips" id="chips">
+                    <div class="chip work" data-cat="trabalho">💼 Trabalho</div>
+                    <div class="chip study" data-cat="estudo">📚 Estudo</div>
+                    <div class="chip exercise" data-cat="exercício">🏃 Exercício</div>
+                    <div class="chip personal" data-cat="pessoal">👤 Pessoal</div>
+                </div>
+            </div>
+            <div class="modal-btns">
+                <button class="btn btn-secondary" id="btnCancel">Cancelar</button>
+                <button class="btn btn-primary" id="btnSave">💾 Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYNltGhYmZ_5v0iL6amxmhySltQ1bNAsA",
-            authDomain: "controledeviagem-6f29d.firebaseapp.com",
-            projectId: "controledeviagem-6f29d",
-            storageBucket: "controledeviagem-6f29d.firebasestorage.app",
-            messagingSenderId: "630942841173",
-            appId: "1:630942841173:web:7b7fb728104bb1a96e57dc"
-        };
-        let db;
-        try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); } catch(e) { console.error('Firebase:', e); }
+        (function() {
+            const KEY = 'agenda_allan_v1';
+            let tasks = [];
+            let dateFilter = null;
+            let editId = null;
+            let category = 'trabalho';
+            let calYear = new Date().getFullYear();
+            let calMonth = new Date().getMonth();
+            let miniYear = new Date().getFullYear();
+            let miniMonth = new Date().getMonth();
+            let miniDates = [];
 
-        const DB_KEY = 'ns_db_v15';
-        let DB = { viagensIda:[], viagensVolta:[], veiculos:[], motoristas:[], administradores:[], usuarioLogado:null };
-        let viagemEditando = { tipo:null, id:null };
-        let trocaMotorista = { tipo:null, id:null, motoristaSelecionado:null };
-        let termoBusca = '';
-
-        async function carregarDB() {
-            try {
-                if(db){ const doc = await db.collection('dados').doc('principal').get();
-                    if(doc.exists){ const d=doc.data(); DB.viagensIda=d.viagensIda||[]; DB.viagensVolta=d.viagensVolta||[]; DB.veiculos=d.veiculos||[]; DB.motoristas=d.motoristas||[]; DB.administradores=d.administradores||[]; } }
-                const u = localStorage.getItem('ns_usuario_logado'); DB.usuarioLogado = u ? JSON.parse(u) : null;
-            } catch(e) {
-                const d=localStorage.getItem(DB_KEY); if(d){ const p=JSON.parse(d); DB.viagensIda=p.viagensIda||[]; DB.viagensVolta=p.viagensVolta||[]; DB.veiculos=p.veiculos||[]; DB.motoristas=p.motoristas||[]; DB.administradores=p.administradores||[]; DB.usuarioLogado=p.usuarioLogado||null; }
+            function today() {
+                const d = new Date();
+                return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
             }
-        }
+            function uid() { return 't' + Date.now() + Math.random().toString(36).substr(2,6); }
 
-        async function salvarDB() {
-            const dados={viagensIda:DB.viagensIda,viagensVolta:DB.viagensVolta,veiculos:DB.veiculos,motoristas:DB.motoristas,administradores:DB.administradores};
-            localStorage.setItem(DB_KEY,JSON.stringify({...dados,usuarioLogado:DB.usuarioLogado}));
-            if(db) await db.collection('dados').doc('principal').set({...dados,atualizadoEm:new Date().toISOString()});
-        }
+            function load() {
+                try {
+                    const s = localStorage.getItem(KEY);
+                    if (s) tasks = JSON.parse(s);
+                    if (!Array.isArray(tasks)) tasks = [];
+                } catch(e) { tasks = []; }
+                if (tasks.length === 0) {
+                    const t = today();
+                    tasks = [
+                        { id: uid(), name: 'Reunião de planejamento', dates: [t], category: 'trabalho', done: false, created: Date.now() },
+                        { id: uid(), name: 'Estudar TypeScript', dates: [t], category: 'estudo', done: false, created: Date.now() },
+                        { id: uid(), name: 'Corrida matinal', dates: [t], category: 'exercício', done: true, created: Date.now() },
+                        { id: uid(), name: 'Ler 30 minutos', dates: [t], category: 'pessoal', done: false, created: Date.now() },
+                    ];
+                    save();
+                }
+                tasks.forEach(t => {
+                    if (t.date && !t.dates) { t.dates = [t.date]; delete t.date; }
+                    if (!t.dates) t.dates = [today()];
+                });
+            }
+            function save() { localStorage.setItem(KEY, JSON.stringify(tasks)); }
 
-        function initUsers() {
-            if(!DB.administradores.length){ DB.administradores=[{id:1,nome:'Administrador',usuario:'admin',telefone:'(11) 99999-9999',senha:'admin123',nivel:'admin'},{id:2,nome:'Motorista Silva',usuario:'motorista1',telefone:'(11) 97777-7777',senha:'123456',nivel:'motorista'},{id:3,nome:'Motorista Santos',usuario:'motorista2',telefone:'(11) 96666-6666',senha:'123456',nivel:'motorista'}]; salvarDB(); }
-        }
+            function fmtDate(ds) {
+                if (!ds) return '';
+                const [y,m,d] = ds.split('-').map(Number);
+                const dt = new Date(y,m-1,d);
+                const td = today();
+                const tmr = new Date(); tmr.setDate(tmr.getDate()+1);
+                const yst = new Date(); yst.setDate(yst.getDate()-1);
+                if (ds === td) return 'Hoje';
+                if (ds === tmr.toISOString().split('T')[0]) return 'Amanhã';
+                if (ds === yst.toISOString().split('T')[0]) return 'Ontem';
+                return dt.toLocaleDateString('pt-BR', { day:'numeric', month:'short' });
+            }
+            function fmtDates(arr) {
+                if (!arr || arr.length === 0) return '';
+                return arr.map(d => fmtDate(d)).join(', ');
+            }
+            function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-        async function fazerLogin() {
-            const u=document.getElementById('loginUsuario').value.trim(), s=document.getElementById('loginSenha').value.trim(), e=document.getElementById('erroLogin');
-            e.classList.remove('visivel'); e.textContent='';
-            if(!u||!s){e.textContent='Preencha todos os campos!';e.classList.add('visivel');return;}
-            await carregarDB(); initUsers();
-            const user=DB.administradores.find(a=>a.usuario===u&&a.senha===s);
-            if(user){ DB.usuarioLogado={id:user.id,nome:user.nome,usuario:user.usuario,nivel:user.nivel,telefone:user.telefone}; localStorage.setItem('ns_usuario_logado',JSON.stringify(DB.usuarioLogado)); document.getElementById('modalLogin').classList.remove('active'); document.getElementById('loginUsuario').value=''; document.getElementById('loginSenha').value=''; atualizarUI(); showToast('Bem-vindo, '+user.nome+'!'); mudarPagina('dashboard'); }
-            else { e.textContent=DB.administradores.some(a=>a.usuario===u)?'Senha incorreta!':'Usuário não encontrado!'; e.classList.add('visivel'); }
-        }
+            function filtered() {
+                if (!dateFilter) return [];
+                return tasks.filter(t => t.dates && t.dates.includes(dateFilter)).sort((a,b) => b.created - a.created);
+            }
 
-        function fazerLogout() {
-            if(confirm('Sair do sistema?')){ DB.usuarioLogado=null; localStorage.removeItem('ns_usuario_logado'); salvarDB(); document.getElementById('modalLogin').classList.add('active'); document.getElementById('loginUsuario').value=''; document.getElementById('loginSenha').value=''; atualizarUI(); document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-dashboard').classList.add('active'); showToast('Logout!'); }
-        }
+            function renderTasks() {
+                const list = document.getElementById('taskList');
+                const f = filtered();
+                const td = today();
+                const sectionTitle = document.getElementById('sectionTitle');
+                const selectedDisplay = document.getElementById('selectedDateDisplay');
 
-        function mostrarModalLogin() { if(DB.usuarioLogado){if(confirm('Fazer logout?'))fazerLogout();} else { document.getElementById('modalLogin').classList.add('active'); document.getElementById('loginUsuario').value=''; document.getElementById('loginSenha').value=''; document.getElementById('erroLogin').classList.remove('visivel'); } }
+                if (!dateFilter) {
+                    selectedDisplay.style.display = 'none';
+                    sectionTitle.textContent = '📌 Selecione uma data';
+                    list.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Toque em um dia no calendário para ver as atividades</div></div>`;
+                } else if (f.length === 0) {
+                    selectedDisplay.style.display = 'block';
+                    document.getElementById('selectedDateValue').textContent = fmtDate(dateFilter);
+                    sectionTitle.textContent = '📌 Atividades';
+                    list.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Nenhuma atividade para ${fmtDate(dateFilter).toLowerCase()}</div></div>`;
+                } else {
+                    selectedDisplay.style.display = 'block';
+                    document.getElementById('selectedDateValue').textContent = fmtDate(dateFilter);
+                    sectionTitle.textContent = '📌 Atividades';
+                    list.innerHTML = f.map(t => {
+                        const id = t.id;
+                        const datesStr = fmtDates(t.dates);
+                        const isToday = t.dates && t.dates.includes(td) && !t.done;
+                        return `<div class="task ${t.done ? 'done' : ''} ${isToday ? 'today-task' : ''}" data-id="${id}">
+                            <div class="task-check" data-act="toggle" data-id="${id}">${t.done ? '✓' : ''}</div>
+                            <div class="task-body" data-act="edit" data-id="${id}">
+                                <div class="task-name">${esc(t.name)}</div>
+                                <div class="task-meta">
+                                    ${datesStr ? `<span class="date-highlight">📅 ${datesStr}</span>` : ''}
+                                    <span class="task-dot dot-${t.category}"></span>
+                                    <span>${t.category.charAt(0).toUpperCase()+t.category.slice(1)}</span>
+                                    ${t.dates && t.dates.length > 1 ? `<span style="color:var(--accent2);font-weight:600;">+${t.dates.length-1}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="task-actions">
+                                <button class="task-btn" data-act="edit" data-id="${id}">✏️</button>
+                                <button class="task-btn del" data-act="delete" data-id="${id}">🗑️</button>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+                updateStats();
+            }
 
-        function atualizarUI() {
-            const av=document.getElementById('userAvatar'), nm=document.getElementById('userName'), nv=document.getElementById('userNivel'), ae=document.querySelectorAll('.admin-only');
-            if(DB.usuarioLogado){ av.textContent=DB.usuarioLogado.nome.charAt(0).toUpperCase(); nm.textContent=DB.usuarioLogado.nome; nv.textContent=DB.usuarioLogado.nivel==='admin'?'Administrador':'Motorista'; ae.forEach(el=>el.style.display=DB.usuarioLogado.nivel==='admin'?'':'none'); }
-            else { av.textContent='?'; nm.textContent='Não logado'; nv.textContent=''; ae.forEach(el=>el.style.display='none'); }
-        }
+            function updateStats() {
+                const f = filtered();
+                const total = f.length;
+                const done = f.filter(t => t.done).length;
+                const pct = total === 0 ? 0 : Math.round((done/total)*100);
+                document.getElementById('progressPct').textContent = pct + '%';
+                const circ = 2 * Math.PI * 25;
+                const fill = document.getElementById('progressFill');
+                fill.style.strokeDasharray = circ;
+                fill.style.strokeDashoffset = circ - (pct/100)*circ;
 
-        function verificarPermissao(){if(!DB.usuarioLogado){document.getElementById('modalLogin').classList.add('active');return false;}return true;}
-        function verificarPermissaoAdmin(){if(!verificarPermissao())return false;if(DB.usuarioLogado.nivel!=='admin'){showToast('Acesso restrito ao administrador!','error');mudarPagina('dashboard');return false;}return true;}
-
-        function mudarPagina(pagina) {
-            if(!DB.usuarioLogado){document.getElementById('modalLogin').classList.add('active');return;}
-            if(!verificarPermissao())return;
-            const pa=['cadastro','veiculos','motoristas','admins'];
-            if(pa.includes(pagina)&&!verificarPermissaoAdmin())return;
-            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-            const pe=document.getElementById(`page-${pagina}`); if(pe)pe.classList.add('active');
-            document.querySelectorAll('.menu-btn').forEach(b=>b.classList.remove('active'));
-            document.querySelectorAll('.menu-btn').forEach(b=>{const t=b.textContent.toLowerCase();if(t.includes('dashboard')&&pagina==='dashboard')b.classList.add('active');if(t.includes('viagens')&&pagina==='viagens')b.classList.add('active');if(t.includes('nova')&&pagina==='cadastro')b.classList.add('active');if(t.includes('veículos')&&pagina==='veiculos')b.classList.add('active');if(t.includes('motoristas')&&pagina==='motoristas')b.classList.add('active');if(t.includes('admins')&&pagina==='admins')b.classList.add('active');});
-            if(pagina==='dashboard')carregarDashboard();
-            if(pagina==='viagens'){termoBusca='';const b=document.getElementById('buscaViagens');if(b)b.value='';atualizarListas();}
-            if(pagina==='cadastro')carregarCadastro();
-            if(pagina==='veiculos')carregarVeiculos();
-            if(pagina==='motoristas')carregarMotoristas();
-            if(pagina==='admins')carregarAdmins();
-        }
-
-        function carregarDashboard() {
-            const cards=document.getElementById('dashboardCards'), ultimas=document.getElementById('ultimasViagens');
-            if(!cards||!ultimas)return;
-            const ti=DB.viagensIda.length, tv=DB.viagensVolta.length, tve=DB.veiculos.length, tmo=DB.motoristas.length, tus=DB.administradores.length;
-            const mi=[...new Set(DB.viagensIda.map(v=>v.motorista).filter(Boolean))], mv=[...new Set(DB.viagensVolta.map(v=>v.motorista).filter(Boolean))];
-            const tma=[...new Set([...mi,...mv])].length;
-            cards.innerHTML=`
-                <div class="dash-card" onclick="mudarPagina('viagens')"><div class="dash-icon"><svg width="40" height="40" style="color:#3498db;"><use href="#ic-arrow-right"/></svg></div><div class="dash-numero">${ti}</div><div class="dash-label">Viagens de Ida</div></div>
-                <div class="dash-card" onclick="mudarPagina('viagens')"><div class="dash-icon"><svg width="40" height="40" style="color:#9b59b6;transform:rotate(180deg);"><use href="#ic-arrow-right"/></svg></div><div class="dash-numero">${tv}</div><div class="dash-label">Viagens de Volta</div></div>
-                <div class="dash-card" onclick="mudarPagina('veiculos')"><div class="dash-icon"><svg width="40" height="40" style="color:#e0c878;"><use href="#ic-car"/></svg></div><div class="dash-numero">${tve}</div><div class="dash-label">Veículos</div></div>
-                <div class="dash-card" onclick="mudarPagina('motoristas')"><div class="dash-icon"><svg width="40" height="40" style="color:#2ecc71;"><use href="#ic-user"/></svg></div><div class="dash-numero">${tmo}</div><div class="dash-label">Motoristas</div><div class="dash-detalhe">${tma} ativos</div></div>
-                <div class="dash-card" onclick="mudarPagina('admins')"><div class="dash-icon"><svg width="40" height="40" style="color:#e74c3c;"><use href="#ic-users"/></svg></div><div class="dash-numero">${tus}</div><div class="dash-label">Usuários</div></div>
-                <div class="dash-card"><div class="dash-icon"><svg width="40" height="40" style="color:#f39c12;"><use href="#ic-bus"/></svg></div><div class="dash-numero">${ti+tv}</div><div class="dash-label">Total Viagens</div></div>`;
-            let hu='<div><h4 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;"><svg class="icon" style="color:#3498db;"><use href="#ic-arrow-right"/></svg> Últimas IDAS</h4>';
-            if(DB.viagensIda[0]){DB.viagensIda.slice(0,3).forEach(v=>{const st=v.status==='Viagem concluída'?'badge-concluida':'badge-status';hu+=`<div class="card" style="padding:14px;margin-bottom:10px;"><div class="rota" style="font-size:0.9rem;"><strong>${v.origem}</strong><svg class="icon icon-sm" style="opacity:0.5;"><use href="#ic-arrow-right"/></svg><strong>${v.destino}</strong></div><div class="info-text"><svg class="icon icon-sm" style="display:inline;"><use href="#ic-calendar"/></svg> ${new Date(v.data).toLocaleString('pt-BR')} | <svg class="icon icon-sm" style="display:inline;"><use href="#ic-user"/></svg> ${v.motorista||'N/A'} | <span class="badge ${st}" style="font-size:0.6rem;">${v.status||'Iniciando viagem'}</span></div></div>`;});}else{hu+='<p style="opacity:0.4;text-align:center;">Nenhuma viagem</p>';}
-            hu+='</div><div><h4 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;"><svg class="icon" style="color:#9b59b6;transform:rotate(180deg);"><use href="#ic-arrow-right"/></svg> Últimas VOLTAS</h4>';
-            if(DB.viagensVolta[0]){DB.viagensVolta.slice(0,3).forEach(v=>{const st=v.status==='Viagem concluída'?'badge-concluida':'badge-status';hu+=`<div class="card" style="padding:14px;margin-bottom:10px;"><div class="rota" style="font-size:0.9rem;"><strong>${v.origem}</strong><svg class="icon icon-sm" style="opacity:0.5;"><use href="#ic-arrow-right"/></svg><strong>${v.destino}</strong></div><div class="info-text"><svg class="icon icon-sm" style="display:inline;"><use href="#ic-calendar"/></svg> ${new Date(v.data).toLocaleString('pt-BR')} | <svg class="icon icon-sm" style="display:inline;"><use href="#ic-user"/></svg> ${v.motorista||'N/A'} | <span class="badge ${st}" style="font-size:0.6rem;">${v.status||'Iniciando viagem'}</span></div></div>`;});}else{hu+='<p style="opacity:0.4;text-align:center;">Nenhuma viagem</p>';}
-            hu+='</div>'; ultimas.innerHTML=hu;
-        }
-
-        function abrirModalTrocarSenha() {
-            document.getElementById('trocaSenhaUsuario').innerHTML=DB.administradores.map(a=>`<option value="${a.id}">${a.nome} (${a.usuario}) - ${a.nivel}</option>`).join('');
-            document.getElementById('novaSenha').value=''; document.getElementById('confirmarNovaSenha').value='';
-            document.querySelectorAll('#modalTrocarSenha .mensagem-erro').forEach(e=>e.classList.remove('visivel'));
-            document.getElementById('modalTrocarSenha').classList.add('active');
-        }
-        function confirmarTrocaSenha() {
-            const id=parseInt(document.getElementById('trocaSenhaUsuario').value), ns=document.getElementById('novaSenha').value, cs=document.getElementById('confirmarNovaSenha').value;
-            document.querySelectorAll('#modalTrocarSenha .mensagem-erro').forEach(e=>e.classList.remove('visivel'));
-            let er=false; if(ns.length<6){document.getElementById('erroNovaSenha').textContent='Mínimo 6 caracteres!';document.getElementById('erroNovaSenha').classList.add('visivel');er=true;}
-            if(ns!==cs){document.getElementById('erroConfirmarNovaSenha').textContent='Senhas não coincidem!';document.getElementById('erroConfirmarNovaSenha').classList.add('visivel');er=true;}
-            if(er)return;
-            const user=DB.administradores.find(a=>a.id===id);
-            if(user){user.senha=ns;salvarDB();document.getElementById('modalTrocarSenha').classList.remove('active');showToast('Senha alterada!');if(DB.usuarioLogado&&DB.usuarioLogado.id===id){showToast('Faça login novamente.','info');fazerLogout();}}
-        }
-        function fecharModalTrocarSenha(){document.getElementById('modalTrocarSenha').classList.remove('active');}
-
-        function abrirModalTrocarMotorista(tipo,id){
-            trocaMotorista={tipo,id,motoristaSelecionado:null};
-            const c=document.getElementById('listaMotoristasTroca');
-            if(!DB.motoristas.length){c.innerHTML='<p style="text-align:center;opacity:0.4;">Nenhum motorista.</p>';}
-            else { c.innerHTML=DB.motoristas.map(m=>`<div class="motorista-option" onclick="selMotoristaTroca(${m.id})" id="mo-${m.id}"><svg width="28" height="28"><use href="#ic-user"/></svg><div style="flex:1;"><div style="font-weight:600;">${m.nome}</div><div style="font-size:0.75rem;opacity:0.5;">${DB.usuarioLogado?.nivel==='admin'?m.telefone||'Sem telefone':'<svg class="icon icon-sm" style="display:inline;"><use href="#ic-eye-off"/></svg> Oculto'}</div></div><div id="ck-${m.id}" style="font-size:1.5rem;opacity:0;color:#2ecc71;"><svg width="20" height="20"><use href="#ic-check"/></svg></div></div>`).join(''); }
-            document.getElementById('modalTrocarMotorista').classList.add('active');
-        }
-        function selMotoristaTroca(id){trocaMotorista.motoristaSelecionado=id;document.querySelectorAll('#listaMotoristasTroca .motorista-option').forEach(e=>e.classList.remove('selecionado'));document.querySelectorAll('#listaMotoristasTroca .motorista-option > div:last-child').forEach(e=>e.style.opacity='0');const o=document.getElementById(`mo-${id}`);if(o)o.classList.add('selecionado');const ck=document.getElementById(`ck-${id}`);if(ck)ck.style.opacity='1';}
-        function confirmarTrocaMotorista(){
-            if(!trocaMotorista.motoristaSelecionado){showToast('Selecione um motorista!','error');return;}
-            const m=DB.motoristas.find(x=>x.id===trocaMotorista.motoristaSelecionado);
-            if(!m){showToast('Motorista não encontrado!','error');return;}
-            const v=trocaMotorista.tipo==='ida'?DB.viagensIda.find(x=>x.id===trocaMotorista.id):DB.viagensVolta.find(x=>x.id===trocaMotorista.id);
-            if(!v){showToast('Viagem não encontrada!','error');return;}
-            v.motorista=m.nome; v.motoristaId=m.id;
-            if(trocaMotorista.tipo==='ida'){const vo=DB.viagensVolta.find(x=>x.viagemIdaVinculada===trocaMotorista.id);if(vo){vo.motorista=m.nome;vo.motoristaId=m.id;}}
-            salvarDB(); document.getElementById('modalTrocarMotorista').classList.remove('active'); atualizarListas(); showToast('Motorista: '+m.nome);
-        }
-        function fecharModalTrocarMotorista(){document.getElementById('modalTrocarMotorista').classList.remove('active');trocaMotorista={tipo:null,id:null,motoristaSelecionado:null};}
-
-        function carregarCadastro(){
-            const c=document.getElementById('cadastroContainer'); if(!c)return;
-            c.innerHTML=`<h2><svg class="icon icon-lg"><use href="#ic-plus"/></svg> Nova Viagem</h2><p style="margin-bottom:20px;opacity:0.55;">Cadastre a ida - a volta é gerada automaticamente.</p><div class="grid-2"><div><h3><svg class="icon" style="color:#3498db;"><use href="#ic-arrow-right"/></svg> IDA</h3><div class="form-group"><label>Origem</label><input type="text" id="idaOrigem" placeholder="Cidade de saída" oninput="attPrevVolta()"></div><div class="form-group"><label>Destino</label><input type="text" id="idaDestino" placeholder="Cidade de chegada" oninput="attPrevVolta()"></div><div class="form-group"><label><svg class="icon icon-sm" style="display:inline;"><use href="#ic-calendar"/></svg> Data</label><input type="datetime-local" id="idaData"></div><div class="form-group"><label><svg class="icon icon-sm" style="display:inline;"><use href="#ic-car"/></svg> Veículo</label><select id="idaVeiculo"><option value="">Selecione...</option>${DB.veiculos.map(v=>`<option value="${v.modelo} - ${v.placa}">${v.modelo} - ${v.placa}</option>`).join('')}</select></div><div class="form-group"><label><svg class="icon icon-sm" style="display:inline;"><use href="#ic-user"/></svg> Motorista</label><select id="idaMotorista"><option value="">Selecione...</option>${DB.motoristas.map(m=>`<option value="${m.nome}">${m.nome}</option>`).join('')}</select></div><div class="form-group"><label>Obs</label><textarea id="idaObs" rows="2" placeholder="Detalhes..."></textarea></div></div><div><h3><svg class="icon" style="color:#9b59b6;transform:rotate(180deg);"><use href="#ic-arrow-right"/></svg> VOLTA <span class="auto-badge">AUTO</span></h3><div class="card" style="background:rgba(155,89,182,0.04);border-color:rgba(155,89,182,0.12);"><div class="form-group"><label>Origem</label><input type="text" id="voltaOrigem" placeholder="Automático" readonly></div><div class="form-group"><label>Destino</label><input type="text" id="voltaDestino" placeholder="Automático" readonly></div><div class="form-group"><label><svg class="icon icon-sm" style="display:inline;"><use href="#ic-calendar"/></svg> Data</label><input type="datetime-local" id="voltaData"></div><div class="form-group"><label><svg class="icon icon-sm" style="display:inline;"><use href="#ic-car"/></svg> Veículo</label><select id="voltaVeiculo"><option value="">Mesmo da ida</option>${DB.veiculos.map(v=>`<option value="${v.modelo} - ${v.placa}">${v.modelo} - ${v.placa}</option>`).join('')}</select></div><div class="form-group"><label><svg class="icon icon-sm" style="display:inline;"><use href="#ic-user"/></svg> Motorista</label><select id="voltaMotorista"><option value="">Mesmo da ida</option>${DB.motoristas.map(m=>`<option value="${m.nome}">${m.nome}</option>`).join('')}</select></div><div class="form-group"><label>Obs</label><textarea id="voltaObs" rows="2" placeholder="Detalhes..."></textarea></div></div></div></div><div class="btn-group"><button class="btn-success" onclick="cadastrarViagem()"><svg class="icon"><use href="#ic-save"/></svg> Salvar</button><button class="btn-outline" onclick="carregarCadastro()"><svg class="icon"><use href="#ic-x"/></svg> Limpar</button></div>`;
-        }
-        function attPrevVolta(){const o=document.getElementById('idaOrigem')?.value||'',d=document.getElementById('idaDestino')?.value||'';const vo=document.getElementById('voltaOrigem'),vd=document.getElementById('voltaDestino');if(vo)vo.value=d;if(vd)vd.value=o;}
-        function cadastrarViagem(){
-            const o=document.getElementById('idaOrigem').value.trim(),d=document.getElementById('idaDestino').value.trim();
-            if(!o||!d){showToast('Preencha Origem e Destino!','error');return;}
-            const mIda=document.getElementById('idaMotorista').value,ms=DB.motoristas.find(m=>m.nome===mIda);
-            const mVola=document.getElementById('voltaMotorista').value,msV=DB.motoristas.find(m=>m.nome===mVola);
-            const vi={id:Date.now(),tipo:'ida',origem:o,destino:d,data:document.getElementById('idaData').value||new Date().toISOString(),veiculo:document.getElementById('idaVeiculo').value||'Não definido',motorista:mIda||'Não definido',motoristaId:ms?ms.id:null,observacoes:document.getElementById('idaObs').value.trim(),status:'Iniciando viagem',dataCadastro:new Date().toLocaleString('pt-BR'),criadoPor:DB.usuarioLogado?DB.usuarioLogado.nome:'Sistema'};
-            const vv={id:Date.now()+1,tipo:'volta',origem:d,destino:o,data:document.getElementById('voltaData').value||new Date().toISOString(),veiculo:document.getElementById('voltaVeiculo').value||vi.veiculo,motorista:mVola||vi.motorista,motoristaId:msV?msV.id:vi.motoristaId,observacoes:document.getElementById('voltaObs').value.trim(),viagemIdaVinculada:vi.id,status:'Iniciando viagem',dataCadastro:new Date().toLocaleString('pt-BR'),criadoPor:DB.usuarioLogado?DB.usuarioLogado.nome:'Sistema'};
-            DB.viagensIda.unshift(vi); DB.viagensVolta.unshift(vv); salvarDB(); carregarCadastro(); showToast('Viagem salva!');
-        }
-
-        function filtrarViagens(){termoBusca=document.getElementById('buscaViagens')?.value?.toLowerCase().trim()||'';atualizarListas();}
-        function viagemMatchBusca(v,t){if(!t)return true;const c=[v.origem,v.destino,v.motorista,v.veiculo,v.observacoes,v.status,v.dataCadastro,v.criadoPor,new Date(v.data).toLocaleString('pt-BR'),new Date(v.data).toLocaleDateString('pt-BR')];if(v.veiculo){const p=v.veiculo.split(' - ');if(p.length>1)c.push(p[1]);}return c.some(x=>x&&x.toLowerCase().includes(t));}
-        function atualizarListas(){atualizarListaIda();atualizarListaVolta();}
-
-        function atualizarListaIda(){
-            const c=document.getElementById('listaViagensIda'),sr=document.getElementById('semResultadosIda'),ct=document.getElementById('contadorIda');
-            if(!c)return;
-            if(!DB.usuarioLogado){c.innerHTML='<p style="text-align:center;opacity:0.4;">Faça login</p>';if(sr)sr.style.display='none';if(ct)ct.textContent='';return;}
-            let vf=termoBusca?DB.viagensIda.filter(v=>viagemMatchBusca(v,termoBusca)):DB.viagensIda;
-            if(ct)ct.textContent=termoBusca?`(${vf.length} de ${DB.viagensIda.length})`:`(${DB.viagensIda.length})`;
-            if(!DB.viagensIda.length){c.innerHTML='<p style="text-align:center;opacity:0.4;">Nenhuma viagem</p>';if(sr)sr.style.display='none';return;}
-            if(vf.length===0&&termoBusca){c.innerHTML='';if(sr)sr.style.display='block';return;}
-            if(sr)sr.style.display='none';
-            const adm=DB.usuarioLogado.nivel==='admin',isM=DB.usuarioLogado.nivel==='motorista';
-            c.innerHTML=vf.map(v=>{
-                const ed=viagemEditando.tipo==='ida'&&viagemEditando.id===v.id;
-                const st=v.status==='Viagem concluída'?'badge-concluida':'badge-status';
-                const svgSeta='<svg class="icon icon-sm" style="opacity:0.5;"><use href="#ic-arrow-right"/></svg>';
-                const svgCal='<svg class="icon icon-sm" style="display:inline;"><use href="#ic-calendar"/></svg>';
-                const svgUser='<svg class="icon icon-sm" style="display:inline;"><use href="#ic-user"/></svg>';
-                const svgCar='<svg class="icon icon-sm" style="display:inline;"><use href="#ic-car"/></svg>';
-                return `<div class="card ${ed?'editando':''}">
-                    <div class="card-header"><div style="display:flex;gap:8px;align-items:center;"><span class="badge badge-ida"><svg class="icon icon-sm"><use href="#ic-arrow-right"/></svg> IDA</span><span class="badge ${st}">${v.status==='Viagem concluída'?'<svg class="icon icon-sm"><use href="#ic-flag"/></svg> '+v.status:'<svg class="icon icon-sm"><use href="#ic-play"/></svg> '+(v.status||'Iniciando viagem')}</span></div><small>${v.dataCadastro} | ${v.criadoPor||'Sistema'}</small></div>
-                    ${ed?`
-                        <div class="form-group"><label>Origem <span class="campo-bloqueado-label">(bloqueado)</span></label><input type="text" value="${v.origem}" class="edit-input" readonly></div>
-                        <div class="form-group"><label>Destino <span class="campo-bloqueado-label">(bloqueado)</span></label><input type="text" value="${v.destino}" class="edit-input" readonly></div>
-                        <div class="form-group"><label>${svgCal} Data</label><input type="datetime-local" id="edit-data-${v.id}" value="${v.data}" class="edit-input"></div>
-                        <div class="form-group"><label>${svgCar} Veículo <span class="campo-bloqueado-label">(bloqueado)</span></label><select class="edit-input" disabled><option>${v.veiculo}</option></select></div>
-                        <div class="form-group"><label>${svgUser} Motorista</label><select id="edit-motorista-${v.id}" class="edit-input"><option value="${v.motorista||''}">${v.motorista||'Selecione...'}</option>${DB.motoristas.map(m=>`<option value="${m.nome}">${m.nome}</option>`).join('')}</select></div>
-                        <div class="form-group"><label>Obs</label><textarea id="edit-obs-${v.id}" rows="2" class="edit-input">${v.observacoes||''}</textarea></div>
-                        <div class="btn-group" style="flex-wrap:wrap;">
-                            <button class="btn-success" style="padding:8px 14px;font-size:0.7rem;" onclick="salvarEdicao('ida',${v.id})"><svg class="icon icon-sm"><use href="#ic-save"/></svg> Salvar</button>
-                            <button class="btn-status" style="padding:8px 14px;font-size:0.7rem;" onclick="alterarStatusViagem('ida',${v.id})"><svg class="icon icon-sm"><use href="#ic-play"/></svg> ${v.status==='Viagem concluída'?'Reiniciar':'Iniciar'} Viagem</button>
-                            ${v.status!=='Viagem concluída'?`<button class="btn-finalizar" style="padding:8px 14px;font-size:0.7rem;" onclick="finalizarViagem('ida',${v.id})"><svg class="icon icon-sm"><use href="#ic-stop"/></svg> Finalizar</button>`:''}
-                            <button class="btn-outline" style="padding:8px 14px;font-size:0.7rem;" onclick="cancelarEdicao()"><svg class="icon icon-sm"><use href="#ic-x"/></svg> Cancelar</button>
-                        </div>
-                    `:`
-                        <div class="rota"><strong>${v.origem}</strong>${svgSeta}<strong>${v.destino}</strong></div>
-                        <div class="info-text">${svgCal} ${new Date(v.data).toLocaleString('pt-BR')} | ${svgCar} ${v.veiculo} | ${svgUser} ${v.motorista||'N/A'}</div>
-                        ${v.observacoes?`<div class="info-text">📝 ${v.observacoes}</div>`:''}
-                        <div class="btn-group">
-                            <button class="btn-whatsapp" style="padding:8px 14px;font-size:0.7rem;" onclick="enviarWhatsApp(${v.id},'ida')"><svg class="icon" style="width:14px;height:14px;"><use href="#ic-whatsapp"/></svg> WhatsApp</button>
-                            <button class="btn-warning" style="padding:8px 14px;font-size:0.7rem;" onclick="abrirModalTrocarMotorista('ida',${v.id})"><svg class="icon icon-sm"><use href="#ic-user"/></svg> Motorista</button>
-                            ${(adm||isM)?`<button class="btn-info" style="padding:8px 14px;font-size:0.7rem;" onclick="iniciarEdicao('ida',${v.id})"><svg class="icon icon-sm"><use href="#ic-edit"/></svg> Editar</button>`:''}
-                            ${adm?`<button class="btn-danger" style="padding:8px 14px;font-size:0.7rem;" onclick="excluirViagemIda(${v.id})"><svg class="icon icon-sm"><use href="#ic-trash"/></svg></button>`:''}
-                        </div>
-                    `}
-                </div>`;
-            }).join('');
-        }
-
-        function atualizarListaVolta(){
-            const c=document.getElementById('listaViagensVolta'),sr=document.getElementById('semResultadosVolta'),ct=document.getElementById('contadorVolta');
-            if(!c)return;
-            if(!DB.usuarioLogado){c.innerHTML='<p style="text-align:center;opacity:0.4;">Faça login</p>';if(sr)sr.style.display='none';if(ct)ct.textContent='';return;}
-            let vf=termoBusca?DB.viagensVolta.filter(v=>viagemMatchBusca(v,termoBusca)):DB.viagensVolta;
-            if(ct)ct.textContent=termoBusca?`(${vf.length} de ${DB.viagensVolta.length})`:`(${DB.viagensVolta.length})`;
-            if(!DB.viagensVolta.length){c.innerHTML='<p style="text-align:center;opacity:0.4;">Nenhuma viagem</p>';if(sr)sr.style.display='none';return;}
-            if(vf.length===0&&termoBusca){c.innerHTML='';if(sr)sr.style.display='block';return;}
-            if(sr)sr.style.display='none';
-            const adm=DB.usuarioLogado.nivel==='admin',isM=DB.usuarioLogado.nivel==='motorista';
-            c.innerHTML=vf.map(v=>{
-                const ed=viagemEditando.tipo==='volta'&&viagemEditando.id===v.id;
-                const vi=v.viagemIdaVinculada?DB.viagensIda.find(x=>x.id===v.viagemIdaVinculada):null;
-                const st=v.status==='Viagem concluída'?'badge-concluida':'badge-status';
-                const svgSeta='<svg class="icon icon-sm" style="opacity:0.5;"><use href="#ic-arrow-right"/></svg>';
-                const svgCal='<svg class="icon icon-sm" style="display:inline;"><use href="#ic-calendar"/></svg>';
-                const svgUser='<svg class="icon icon-sm" style="display:inline;"><use href="#ic-user"/></svg>';
-                const svgCar='<svg class="icon icon-sm" style="display:inline;"><use href="#ic-car"/></svg>';
-                return `<div class="card ${ed?'editando':''}">
-                    <div class="card-header"><div style="display:flex;gap:8px;align-items:center;"><span class="badge badge-volta"><svg class="icon icon-sm" style="transform:rotate(180deg);"><use href="#ic-arrow-right"/></svg> VOLTA</span><span class="auto-badge">AUTO</span><span class="badge ${st}">${v.status==='Viagem concluída'?'<svg class="icon icon-sm"><use href="#ic-flag"/></svg> '+v.status:'<svg class="icon icon-sm"><use href="#ic-play"/></svg> '+(v.status||'Iniciando viagem')}</span></div></div>
-                    ${ed?`
-                        <div class="form-group"><label>Origem <span class="campo-bloqueado-label">(bloqueado)</span></label><input type="text" value="${v.origem}" class="edit-input" readonly></div>
-                        <div class="form-group"><label>Destino <span class="campo-bloqueado-label">(bloqueado)</span></label><input type="text" value="${v.destino}" class="edit-input" readonly></div>
-                        <div class="form-group"><label>${svgCal} Data</label><input type="datetime-local" id="edit-data-${v.id}" value="${v.data}" class="edit-input"></div>
-                        <div class="form-group"><label>${svgCar} Veículo <span class="campo-bloqueado-label">(bloqueado)</span></label><select class="edit-input" disabled><option>${v.veiculo}</option></select></div>
-                        <div class="form-group"><label>${svgUser} Motorista</label><select id="edit-motorista-${v.id}" class="edit-input"><option value="${v.motorista||''}">${v.motorista||'Selecione...'}</option>${DB.motoristas.map(m=>`<option value="${m.nome}">${m.nome}</option>`).join('')}</select></div>
-                        <div class="form-group"><label>Obs</label><textarea id="edit-obs-${v.id}" rows="2" class="edit-input">${v.observacoes||''}</textarea></div>
-                        <div class="btn-group" style="flex-wrap:wrap;">
-                            <button class="btn-success" style="padding:8px 14px;font-size:0.7rem;" onclick="salvarEdicao('volta',${v.id})"><svg class="icon icon-sm"><use href="#ic-save"/></svg> Salvar</button>
-                            <button class="btn-status" style="padding:8px 14px;font-size:0.7rem;" onclick="alterarStatusViagem('volta',${v.id})"><svg class="icon icon-sm"><use href="#ic-play"/></svg> ${v.status==='Viagem concluída'?'Reiniciar':'Iniciar'} Viagem</button>
-                            ${v.status!=='Viagem concluída'?`<button class="btn-finalizar" style="padding:8px 14px;font-size:0.7rem;" onclick="finalizarViagem('volta',${v.id})"><svg class="icon icon-sm"><use href="#ic-stop"/></svg> Finalizar</button>`:''}
-                            <button class="btn-outline" style="padding:8px 14px;font-size:0.7rem;" onclick="cancelarEdicao()"><svg class="icon icon-sm"><use href="#ic-x"/></svg> Cancelar</button>
-                        </div>
-                    `:`
-                        <div class="rota"><strong>${v.origem}</strong>${svgSeta}<strong>${v.destino}</strong></div>
-                        <div class="info-text">${svgCal} ${new Date(v.data).toLocaleString('pt-BR')} | ${svgCar} ${v.veiculo} | ${svgUser} ${v.motorista||'N/A'}</div>
-                        ${vi?`<div class="linked-badge">🔗 Ida: ${vi.origem} ➔ ${vi.destino}</div>`:''}
-                        ${v.observacoes?`<div class="info-text">📝 ${v.observacoes}</div>`:''}
-                        <div class="btn-group">
-                            <button class="btn-whatsapp" style="padding:8px 14px;font-size:0.7rem;" onclick="enviarWhatsApp(${v.id},'volta')"><svg class="icon" style="width:14px;height:14px;"><use href="#ic-whatsapp"/></svg> WhatsApp</button>
-                            <button class="btn-warning" style="padding:8px 14px;font-size:0.7rem;" onclick="abrirModalTrocarMotorista('volta',${v.id})"><svg class="icon icon-sm"><use href="#ic-user"/></svg> Motorista</button>
-                            ${(adm||isM)?`<button class="btn-info" style="padding:8px 14px;font-size:0.7rem;" onclick="iniciarEdicao('volta',${v.id})"><svg class="icon icon-sm"><use href="#ic-edit"/></svg> Editar</button>`:''}
-                            ${adm?`<button class="btn-danger" style="padding:8px 14px;font-size:0.7rem;" onclick="excluirViagemVolta(${v.id})"><svg class="icon icon-sm"><use href="#ic-trash"/></svg></button>`:''}
-                        </div>
-                    `}
-                </div>`;
-            }).join('');
-        }
-
-        function iniciarEdicao(tipo,id){viagemEditando={tipo,id};atualizarListas();}
-        function cancelarEdicao(){viagemEditando={tipo:null,id:null};atualizarListas();}
-        function alterarStatusViagem(tipo,id){const v=tipo==='ida'?DB.viagensIda.find(x=>x.id===id):DB.viagensVolta.find(x=>x.id===id);if(!v){showToast('Viagem não encontrada!','error');return;}v.status='Iniciando viagem';salvarDB();atualizarListas();showToast('Status atualizado!');}
-        function finalizarViagem(tipo,id){const v=tipo==='ida'?DB.viagensIda.find(x=>x.id===id):DB.viagensVolta.find(x=>x.id===id);if(!v){showToast('Viagem não encontrada!','error');return;}v.status='Viagem concluída';salvarDB();cancelarEdicao();showToast('Viagem finalizada!');}
-
-        function salvarEdicao(tipo,id){
-            const v=tipo==='ida'?DB.viagensIda.find(x=>x.id===id):DB.viagensVolta.find(x=>x.id===id);
-            if(!v){showToast('Viagem não encontrada!','error');return;}
-            const isAdmin=DB.usuarioLogado?.nivel==='admin';
-            
-            // DATA - disponível para todos
-            const dtElem=document.getElementById(`edit-data-${id}`);
-            if(dtElem&&dtElem.value){v.data=dtElem.value;}
-            
-            // OBS - disponível para todos
-            const obElem=document.getElementById(`edit-obs-${id}`);
-            if(obElem){v.observacoes=obElem.value;}
-            
-            // MOTORISTA - disponível para todos
-            const moElem=document.getElementById(`edit-motorista-${id}`);
-            if(moElem&&moElem.value){v.motorista=moElem.value;const mm=DB.motoristas.find(m=>m.nome===moElem.value);v.motoristaId=mm?mm.id:null;}
-            
-            // ORIGEM, DESTINO, VEÍCULO - apenas admin
-            if(isAdmin){
-                const oElem=document.getElementById(`edit-origem-${id}`);
-                const dElem=document.getElementById(`edit-destino-${id}`);
-                const veElem=document.getElementById(`edit-veiculo-${id}`);
-                if(oElem&&oElem.value)v.origem=oElem.value;
-                if(dElem&&dElem.value)v.destino=dElem.value;
-                if(veElem&&veElem.value)v.veiculo=veElem.value;
-                if(tipo==='ida'&&oElem&&oElem.value&&dElem&&dElem.value){
-                    const vv=DB.viagensVolta.find(x=>x.viagemIdaVinculada===id);
-                    if(vv){vv.origem=dElem.value;vv.destino=oElem.value;}
+                if (!dateFilter) {
+                    document.getElementById('progressTitle').textContent = 'Selecione uma data';
+                    document.getElementById('progressSub').textContent = 'Toque em um dia no calendário';
+                } else if (total === 0) {
+                    document.getElementById('progressTitle').textContent = 'Nenhuma tarefa';
+                    document.getElementById('progressSub').textContent = 'Neste dia';
+                } else if (done === total) {
+                    document.getElementById('progressTitle').textContent = 'Tudo concluído! 🎉';
+                    document.getElementById('progressSub').textContent = `${done}/${total} atividades feitas`;
+                } else {
+                    document.getElementById('progressTitle').textContent = `${done} de ${total} concluídas`;
+                    document.getElementById('progressSub').textContent = `${total-done} pendentes`;
                 }
             }
-            salvarDB(); cancelarEdicao(); showToast('Viagem atualizada!');
-        }
 
-        function excluirViagemIda(id){if(confirm('Excluir ida? A volta vinculada também será excluída.')){DB.viagensIda=DB.viagensIda.filter(v=>v.id!==id);DB.viagensVolta=DB.viagensVolta.filter(v=>v.viagemIdaVinculada!==id);salvarDB();atualizarListas();showToast('Excluída!');}}
-        function excluirViagemVolta(id){if(confirm('Excluir volta?')){DB.viagensVolta=DB.viagensVolta.filter(v=>v.id!==id);salvarDB();atualizarListas();showToast('Excluída!');}}
+            function renderCalendar() {
+                const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+                document.getElementById('calMonth').textContent = months[calMonth] + ' ' + calYear;
+                const wd = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+                document.getElementById('calWeekdays').innerHTML = wd.map(d => `<div class="calendar-weekday">${d}</div>`).join('');
+                const firstDay = new Date(calYear, calMonth, 1).getDay();
+                const daysIn = new Date(calYear, calMonth+1, 0).getDate();
+                const daysPrev = new Date(calYear, calMonth, 0).getDate();
+                const td = today();
+                const taskDates = new Set();
+                tasks.forEach(t => { if (t.dates) t.dates.forEach(d => taskDates.add(d)); });
+                let h = '';
+                for (let i = firstDay-1; i >= 0; i--) {
+                    const day = daysPrev - i;
+                    const m = calMonth === 0 ? 11 : calMonth-1;
+                    const y = calMonth === 0 ? calYear-1 : calYear;
+                    h += `<div class="calendar-date other" data-date="${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}">${day}</div>`;
+                }
+                for (let day = 1; day <= daysIn; day++) {
+                    const ds = calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+                    let cls = 'calendar-date';
+                    if (ds === td) cls += ' today';
+                    if (ds === dateFilter) cls += ' selected';
+                    if (taskDates.has(ds)) cls += ' has-task';
+                    h += `<div class="${cls}" data-date="${ds}">${day}</div>`;
+                }
+                const total = firstDay + daysIn;
+                const rem = total <= 35 ? 35 - total : 42 - total;
+                for (let day = 1; day <= rem; day++) {
+                    const m = calMonth === 11 ? 0 : calMonth+1;
+                    const y = calMonth === 11 ? calYear+1 : calYear;
+                    h += `<div class="calendar-date other" data-date="${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}">${day}</div>`;
+                }
+                document.getElementById('calDates').innerHTML = h;
+            }
 
-        function carregarVeiculos(){
-            const c=document.getElementById('veiculosContainer');if(!c)return;
-            c.innerHTML=`<h2><svg class="icon icon-lg"><use href="#ic-car"/></svg> Veículos</h2><div class="grid-2"><div><h3>Cadastrar</h3><div class="form-group"><label>Modelo</label><input type="text" id="veiculoModelo" placeholder="Ex: Toyota Corolla"></div><div class="form-group"><label>Placa</label><input type="text" id="veiculoPlaca" placeholder="ABC-1234" style="text-transform:uppercase;"></div><div class="form-group"><label>Ano</label><input type="number" id="veiculoAno" placeholder="2024" min="2000" max="2030"></div><div class="btn-group"><button class="btn-primary" onclick="cadastrarVeiculo()"><svg class="icon"><use href="#ic-save"/></svg> Salvar</button><button class="btn-outline" onclick="carregarVeiculos()"><svg class="icon"><use href="#ic-x"/></svg> Limpar</button></div></div><div><h3>Lista</h3><div class="table-container"><table><thead><tr><th>Modelo</th><th>Placa</th><th>Ano</th><th></th></tr></thead><tbody id="corpoTabelaVeiculos"></tbody></table></div></div></div>`;attTabelaVeiculos();}
-        function cadastrarVeiculo(){const m=document.getElementById('veiculoModelo').value.trim(),p=document.getElementById('veiculoPlaca').value.trim().toUpperCase(),a=document.getElementById('veiculoAno').value;if(!m||!p){showToast('Preencha Modelo e Placa!','error');return;}DB.veiculos.push({id:Date.now(),modelo:m,placa:p,ano:a});salvarDB();carregarVeiculos();showToast('Veículo salvo!');}
-        function attTabelaVeiculos(){const t=document.getElementById('corpoTabelaVeiculos');if(!t)return;if(!DB.veiculos.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;opacity:0.4;">Nenhum veículo</td></tr>';return;}t.innerHTML=DB.veiculos.map(v=>`<tr><td>${v.modelo}</td><td>${v.placa}</td><td>${v.ano||'-'}</td><td><button class="btn-danger" style="padding:5px 10px;font-size:0.7rem;" onclick="excluirVeiculo(${v.id})"><svg class="icon icon-sm"><use href="#ic-trash"/></svg></button></td></tr>`).join('');}
-        function excluirVeiculo(id){if(confirm('Excluir?')){DB.veiculos=DB.veiculos.filter(v=>v.id!==id);salvarDB();carregarVeiculos();showToast('Excluído!');}}
+            function calMove(d) {
+                calMonth += d;
+                if (calMonth > 11) { calMonth = 0; calYear++; }
+                else if (calMonth < 0) { calMonth = 11; calYear--; }
+                renderCalendar();
+            }
 
-        function carregarMotoristas(){
-            const c=document.getElementById('motoristasContainer');if(!c)return;
-            const adm=DB.usuarioLogado?.nivel==='admin';
-            c.innerHTML=`<h2><svg class="icon icon-lg"><use href="#ic-user"/></svg> Motoristas</h2><div class="grid-2"><div><h3>Cadastrar</h3><div class="form-group"><label>Nome Completo</label><input type="text" id="motoristaNome" placeholder="Nome do motorista"></div><div class="form-group"><label>Telefone</label><input type="tel" id="motoristaTelefone" placeholder="(00) 00000-0000"></div><div class="form-group"><label>CNH</label><input type="text" id="motoristaCNH" placeholder="Número da CNH"></div><div class="btn-group"><button class="btn-primary" onclick="cadastrarMotorista()"><svg class="icon"><use href="#ic-save"/></svg> Salvar</button><button class="btn-outline" onclick="carregarMotoristas()"><svg class="icon"><use href="#ic-x"/></svg> Limpar</button></div></div><div><h3>Lista</h3><div class="table-container"><table><thead><tr><th>Nome</th><th>${adm?'<svg class="icon icon-sm"><use href="#ic-phone"/></svg> Telefone':'<svg class="icon icon-sm"><use href="#ic-eye-off"/></svg> Contato'}</th><th>CNH</th><th></th></tr></thead><tbody id="corpoTabelaMotoristas"></tbody></table></div></div></div>`;attTabelaMotoristas();}
-        function cadastrarMotorista(){const n=document.getElementById('motoristaNome').value.trim();if(!n){showToast('Preencha o nome!','error');return;}DB.motoristas.push({id:Date.now(),nome:n,telefone:document.getElementById('motoristaTelefone').value.trim(),cnh:document.getElementById('motoristaCNH').value.trim()});salvarDB();carregarMotoristas();showToast('Motorista salvo!');}
-        function attTabelaMotoristas(){const t=document.getElementById('corpoTabelaMotoristas');if(!t)return;const adm=DB.usuarioLogado?.nivel==='admin';if(!DB.motoristas.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;opacity:0.4;">Nenhum motorista</td></tr>';return;}t.innerHTML=DB.motoristas.map(m=>`<tr><td>${m.nome}</td><td>${adm?(m.telefone||'-'):'<span style="opacity:0.35;"><svg class="icon icon-sm" style="display:inline;"><use href="#ic-eye-off"/></svg> Oculto</span>'}</td><td>${m.cnh||'-'}</td><td><button class="btn-danger" style="padding:5px 10px;font-size:0.7rem;" onclick="excluirMotorista(${m.id})"><svg class="icon icon-sm"><use href="#ic-trash"/></svg></button></td></tr>`).join('');}
-        function excluirMotorista(id){if(confirm('Excluir?')){DB.motoristas=DB.motoristas.filter(m=>m.id!==id);salvarDB();carregarMotoristas();showToast('Excluído!');}}
+            function calSelect(ds) {
+                dateFilter = ds;
+                renderTasks();
+                renderCalendar();
+            }
 
-        function carregarAdmins(){
-            const c=document.getElementById('adminsContainer');if(!c)return;
-            c.innerHTML=`<h2><svg class="icon icon-lg"><use href="#ic-users"/></svg> Usuários</h2><div class="grid-2"><div><h3>Cadastrar</h3><div class="form-group"><label>Nome</label><input type="text" id="adminNome" placeholder="Nome completo"></div><div class="form-group"><label>Usuário (Login)</label><input type="text" id="adminUsuario" placeholder="Nome para login"><div class="mensagem-erro" id="erroCadastroUsuario"></div></div><div class="form-group"><label>Telefone</label><input type="tel" id="adminTelefone" placeholder="(00) 00000-0000"></div><div class="form-group"><label>Senha</label><input type="password" id="adminSenha" placeholder="Mínimo 6 caracteres"><div class="mensagem-erro" id="erroCadastroSenha"></div></div><div class="form-group"><label>Confirmar Senha</label><input type="password" id="adminConfirmarSenha" placeholder="Repita a senha"><div class="mensagem-erro" id="erroConfirmarSenha"></div></div><div class="form-group"><label>Nível</label><select id="adminNivel"><option value="motorista">Motorista</option><option value="admin">Administrador</option></select></div><div class="btn-group"><button class="btn-primary" onclick="cadastrarAdmin()"><svg class="icon"><use href="#ic-save"/></svg> Salvar</button><button class="btn-outline" onclick="carregarAdmins()"><svg class="icon"><use href="#ic-x"/></svg> Limpar</button></div></div><div><h3>Lista</h3><div class="table-container"><table><thead><tr><th>Nome</th><th>Usuário</th><th>Nível</th><th></th></tr></thead><tbody id="corpoTabelaAdmins"></tbody></table></div></div></div>`;attTabelaAdmins();}
-        function cadastrarAdmin(){const n=document.getElementById('adminNome').value.trim(),u=document.getElementById('adminUsuario').value.trim(),t=document.getElementById('adminTelefone').value.trim(),s=document.getElementById('adminSenha').value,cs=document.getElementById('adminConfirmarSenha').value,nv=document.getElementById('adminNivel').value;document.querySelectorAll('.mensagem-erro').forEach(e=>e.classList.remove('visivel'));let er=false;if(!n||!u||!s){showToast('Preencha nome, usuário e senha!','error');return;}if(DB.administradores.some(a=>a.usuario===u)){document.getElementById('erroCadastroUsuario').textContent='Usuário já existe!';document.getElementById('erroCadastroUsuario').classList.add('visivel');er=true;}if(s.length<6){document.getElementById('erroCadastroSenha').textContent='Mínimo 6 caracteres!';document.getElementById('erroCadastroSenha').classList.add('visivel');er=true;}if(s!==cs){document.getElementById('erroConfirmarSenha').textContent='Senhas não coincidem!';document.getElementById('erroConfirmarSenha').classList.add('visivel');er=true;}if(er)return;DB.administradores.push({id:Date.now(),nome:n,usuario:u,telefone:t,senha:s,nivel:nv});salvarDB();carregarAdmins();showToast('Usuário salvo!');}
-        function attTabelaAdmins(){const t=document.getElementById('corpoTabelaAdmins');if(!t)return;if(!DB.administradores.length){t.innerHTML='<tr><td colspan="4" style="text-align:center;opacity:0.4;">Nenhum usuário</td></tr>';return;}t.innerHTML=DB.administradores.map(a=>`<tr><td>${a.nome}</td><td>${a.usuario}</td><td><span class="badge ${a.nivel==='admin'?'badge-admin':'badge-motorista'}">${a.nivel}</span></td><td>${DB.usuarioLogado&&DB.usuarioLogado.id!==a.id?`<button class="btn-danger" style="padding:5px 10px;font-size:0.7rem;" onclick="excluirAdmin(${a.id})"><svg class="icon icon-sm"><use href="#ic-trash"/></svg></button>`:'<span style="opacity:0.35;font-size:0.7rem;">Você</span>'}</td></tr>`).join('');}
-        function excluirAdmin(id){if(DB.administradores.length<=1){showToast('Não é possível excluir o último!','error');return;}if(DB.usuarioLogado&&id===DB.usuarioLogado.id){showToast('Não pode se excluir!','error');return;}if(confirm('Excluir?')){DB.administradores=DB.administradores.filter(a=>a.id!==id);salvarDB();carregarAdmins();showToast('Excluído!');}}
+            function clearFilter() {
+                dateFilter = null;
+                renderTasks();
+                renderCalendar();
+            }
 
-        function enviarWhatsApp(id,tipo){const v=tipo==='ida'?DB.viagensIda.find(x=>x.id===id):DB.viagensVolta.find(x=>x.id===id);if(!v){showToast('Não encontrada!','error');return;}const msg=`*Relatório NS VIANORTESUL*%0A%0A🔹 ${tipo.toUpperCase()}%0A📍 ${v.origem} ➔ ${v.destino}%0A📅 ${new Date(v.data).toLocaleString('pt-BR')}%0A🚗 ${v.veiculo}%0A👤 ${v.motorista||'N/A'}%0A🚀 ${v.status||'Iniciando viagem'}%0A${v.observacoes?`📝 ${v.observacoes}%0A`:''}`;window.open(`https://wa.me/?text=${msg}`,'_blank');}
-        function showToast(msg,tipo='success'){const t=document.createElement('div');t.className=`toast toast-${tipo}`;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2800);}
-        function criarParticulas(){const c=document.getElementById('particles');for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';p.style.cssText=`width:${Math.random()*6+3}px;height:${p.style.width};left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*20}s;animation-duration:${Math.random()*20+12}s;`;c.appendChild(p);}}
+            function renderMiniCal() {
+                const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+                document.getElementById('miniCalMonth').textContent = months[miniMonth] + ' ' + miniYear;
+                const wd = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+                document.getElementById('miniCalDays').innerHTML = wd.map(d => `<div class="mini-cal-day">${d}</div>`).join('');
+                const firstDay = new Date(miniYear, miniMonth, 1).getDay();
+                const daysIn = new Date(miniYear, miniMonth+1, 0).getDate();
+                const daysPrev = new Date(miniYear, miniMonth, 0).getDate();
+                const td = today();
+                let h = '';
+                for (let i = firstDay-1; i >= 0; i--) {
+                    const day = daysPrev - i;
+                    const m = miniMonth === 0 ? 11 : miniMonth-1;
+                    const y = miniMonth === 0 ? miniYear-1 : miniYear;
+                    h += `<div class="mini-cal-date other" data-date="${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}">${day}</div>`;
+                }
+                for (let day = 1; day <= daysIn; day++) {
+                    const ds = miniYear+'-'+String(miniMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+                    let cls = 'mini-cal-date';
+                    if (ds === td) cls += ' today';
+                    if (miniDates.includes(ds)) cls += ' sel';
+                    h += `<div class="${cls}" data-date="${ds}">${day}</div>`;
+                }
+                const total = firstDay + daysIn;
+                const rem = total <= 35 ? 35 - total : 42 - total;
+                for (let day = 1; day <= rem; day++) {
+                    const m = miniMonth === 11 ? 0 : miniMonth+1;
+                    const y = miniMonth === 11 ? miniYear+1 : miniYear;
+                    h += `<div class="mini-cal-date other" data-date="${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}">${day}</div>`;
+                }
+                document.getElementById('miniCalDates').innerHTML = h;
+                updateMiniSelected();
+            }
 
-        document.addEventListener('DOMContentLoaded',async()=>{criarParticulas();await carregarDB();initUsers();atualizarUI();if(DB.usuarioLogado){document.getElementById('modalLogin').classList.remove('active');mudarPagina('dashboard');}else{document.getElementById('modalLogin').classList.add('active');}});
-        document.addEventListener('keypress',e=>{if(e.key==='Enter'&&document.getElementById('modalLogin').classList.contains('active'))fazerLogin();});
+            function updateMiniSelected() {
+                const el = document.getElementById('miniCalSelected');
+                if (miniDates.length === 0) {
+                    el.innerHTML = '📅 Nenhum dia selecionado';
+                } else if (miniDates.length <= 5) {
+                    el.innerHTML = miniDates.map(d =>
+                        `<span class="mini-cal-tag">${fmtDate(d)} <span class="remove" data-date="${d}">✕</span></span>`
+                    ).join('');
+                } else {
+                    el.innerHTML = `<span class="mini-cal-tag">${miniDates.length} dias selecionados</span>`;
+                }
+            }
+
+            function miniToggle(ds) {
+                const idx = miniDates.indexOf(ds);
+                if (idx > -1) { miniDates.splice(idx, 1); }
+                else { miniDates.push(ds); }
+                miniDates.sort();
+                renderMiniCal();
+            }
+
+            function miniRemove(ds) {
+                miniDates = miniDates.filter(d => d !== ds);
+                renderMiniCal();
+            }
+
+            function miniMove(d) {
+                miniMonth += d;
+                if (miniMonth > 11) { miniMonth = 0; miniYear++; }
+                else if (miniMonth < 0) { miniMonth = 11; miniYear--; }
+                renderMiniCal();
+            }
+
+            function toggleTask(id) {
+                const t = tasks.find(x => x.id === id);
+                if (t) { t.done = !t.done; save(); renderTasks(); renderCalendar(); toast(t.done ? '✅ Concluída!' : '🔄 Reaberta'); }
+            }
+
+            function deleteTask(id) {
+                const len = tasks.length;
+                tasks = tasks.filter(x => x.id !== id);
+                if (tasks.length < len) {
+                    if (editId === id) closeModal();
+                    save(); renderTasks(); renderCalendar();
+                    toast('🗑️ Removida');
+                }
+            }
+
+            function clearDone() {
+                if (!dateFilter) { toast('ℹ️ Selecione uma data primeiro'); return; }
+                const f = filtered();
+                const n = f.filter(t => t.done).length;
+                if (n === 0) { toast('ℹ️ Nada para limpar'); return; }
+                const idsToRemove = f.filter(t => t.done).map(t => t.id);
+                tasks = tasks.filter(t => !idsToRemove.includes(t.id));
+                save(); renderTasks(); renderCalendar();
+                toast(`🧹 ${n} removida(s)`);
+            }
+
+            function openModal(id) {
+                const input = document.getElementById('inputName');
+                if (id) {
+                    const t = tasks.find(x => x.id === id);
+                    if (!t) return;
+                    editId = id;
+                    document.getElementById('modalTitle').textContent = 'Editar Atividade';
+                    document.getElementById('editBadge').style.display = 'block';
+                    document.getElementById('btnSave').textContent = '💾 Atualizar';
+                    input.value = t.name;
+                    miniDates = [...(t.dates || [today()])];
+                    category = t.category;
+                    if (miniDates.length > 0) {
+                        const [y,m] = miniDates[0].split('-');
+                        miniYear = parseInt(y); miniMonth = parseInt(m)-1;
+                    }
+                } else {
+                    editId = null;
+                    document.getElementById('modalTitle').textContent = 'Nova Atividade';
+                    document.getElementById('editBadge').style.display = 'none';
+                    document.getElementById('btnSave').textContent = '💾 Salvar';
+                    input.value = '';
+                    miniDates = dateFilter ? [dateFilter] : [today()];
+                    category = 'trabalho';
+                    const [y,m] = miniDates[0].split('-');
+                    miniYear = parseInt(y); miniMonth = parseInt(m)-1;
+                }
+                updateChips();
+                renderMiniCal();
+                document.getElementById('modalOverlay').classList.add('open');
+                setTimeout(() => input.focus(), 400);
+            }
+
+            function closeModal() {
+                document.getElementById('modalOverlay').classList.remove('open');
+                editId = null;
+                miniDates = [];
+            }
+
+            function setCategory(cat) { category = cat; updateChips(); }
+
+            function updateChips() {
+                document.querySelectorAll('.chip').forEach(c => {
+                    c.classList.remove('active');
+                    if (c.dataset.cat === category) c.classList.add('active');
+                });
+            }
+
+            function saveTask() {
+                const input = document.getElementById('inputName');
+                const name = input.value.trim();
+                if (!name) { toast('⚠️ Digite o nome'); input.focus(); return; }
+                if (miniDates.length === 0) { toast('⚠️ Selecione pelo menos um dia'); return; }
+
+                if (editId) {
+                    const t = tasks.find(x => x.id === editId);
+                    if (t) { t.name = name; t.dates = [...miniDates]; t.category = category; }
+                    toast('✅ Atualizada!');
+                } else {
+                    tasks.push({ id: uid(), name, dates: [...miniDates], category, done: false, created: Date.now() });
+                    toast('✅ Adicionada!');
+                }
+                save();
+                if (dateFilter && !miniDates.includes(dateFilter)) {
+                    dateFilter = miniDates[0];
+                    const [y,m] = miniDates[0].split('-');
+                    calYear = parseInt(y); calMonth = parseInt(m)-1;
+                }
+                renderTasks();
+                renderCalendar();
+                closeModal();
+            }
+
+            let toastTimer;
+            function toast(msg) {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+            }
+
+            function updateClock() {
+                const n = new Date();
+                document.getElementById('clockTime').textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+                document.getElementById('clockSec').textContent = String(n.getSeconds()).padStart(2,'0');
+            }
+
+            function updateHeader() {
+                document.getElementById('headerDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
+            }
+
+            function bind() {
+                document.getElementById('taskList').addEventListener('click', function(e) {
+                    const btn = e.target.closest('[data-act]');
+                    if (!btn) return;
+                    e.stopPropagation();
+                    const act = btn.dataset.act;
+                    const id = btn.dataset.id;
+                    if (act === 'toggle') toggleTask(id);
+                    else if (act === 'edit') openModal(id);
+                    else if (act === 'delete') deleteTask(id);
+                });
+
+                document.getElementById('calDates').addEventListener('click', function(e) {
+                    const d = e.target.closest('.calendar-date');
+                    if (!d) return;
+                    calSelect(d.dataset.date);
+                });
+                document.getElementById('calPrev').addEventListener('click', function(e) { e.preventDefault(); calMove(-1); });
+                document.getElementById('calNext').addEventListener('click', function(e) { e.preventDefault(); calMove(1); });
+                document.getElementById('clearDateBtn').addEventListener('click', function(e) { e.preventDefault(); clearFilter(); });
+
+                document.getElementById('miniCalDates').addEventListener('click', function(e) {
+                    const d = e.target.closest('.mini-cal-date');
+                    if (!d) return;
+                    e.stopPropagation();
+                    miniToggle(d.dataset.date);
+                });
+                document.getElementById('miniCalSelected').addEventListener('click', function(e) {
+                    const r = e.target.closest('.remove');
+                    if (!r) return;
+                    e.stopPropagation();
+                    miniRemove(r.dataset.date);
+                });
+                document.getElementById('miniCalPrev').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); miniMove(-1); });
+                document.getElementById('miniCalNext').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); miniMove(1); });
+
+                document.getElementById('chips').addEventListener('click', function(e) {
+                    const c = e.target.closest('.chip');
+                    if (!c) return;
+                    setCategory(c.dataset.cat);
+                });
+
+                document.getElementById('fab').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (document.getElementById('modalOverlay').classList.contains('open')) closeModal();
+                    else openModal();
+                });
+
+                document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+                document.getElementById('modalSheet').addEventListener('click', function(e) { e.stopPropagation(); });
+                document.getElementById('btnCancel').addEventListener('click', function(e) { e.preventDefault(); closeModal(); });
+                document.getElementById('btnSave').addEventListener('click', function(e) { e.preventDefault(); saveTask(); });
+                document.getElementById('clearDone').addEventListener('click', function(e) { e.preventDefault(); clearDone(); });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('open')) closeModal();
+                });
+            }
+
+            function init() {
+                load();
+                renderTasks();
+                renderCalendar();
+                updateHeader();
+                updateClock();
+                updateChips();
+                bind();
+                setInterval(updateClock, 1000);
+                setInterval(save, 15000);
+                window.addEventListener('beforeunload', save);
+            }
+
+            init();
+        })();
     </script>
 </body>
 </html>
