@@ -213,7 +213,7 @@
             border-radius: 8px;
             margin-bottom: 15px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 8px;
             border: 1px solid #e2e8f0;
         }
@@ -223,8 +223,6 @@
             align-items: center;
             gap: 6px;
             font-size: 0.85rem;
-            cursor: pointer;
-            user-select: none;
             background: #fff;
             padding: 6px 8px;
             border-radius: 6px;
@@ -232,10 +230,35 @@
             font-weight: 500;
         }
 
-        .parcela-item input {
+        .parcela-item input[type="checkbox"] {
             cursor: pointer;
             width: 16px;
             height: 16px;
+        }
+
+        .parcela-item input[type="number"] {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .btn-editar-parcela {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .btn-editar-parcela:hover {
+            background: #2980b9;
         }
 
         .nota-footer {
@@ -452,7 +475,12 @@
                     cobranca.valor = valor;
                     cobranca.texto = texto;
                     if (cobranca.historicoParcelas.length !== qtdParcelas) {
-                        cobranca.historicoParcelas = Array(qtdParcelas).fill(false);
+                        const novasParcelas = Array(qtdParcelas).fill(false);
+                        // Copia os valores existentes se possível
+                        for (let i = 0; i < Math.min(cobranca.historicoParcelas.length, qtdParcelas); i++) {
+                            novasParcelas[i] = cobranca.historicoParcelas[i];
+                        }
+                        cobranca.historicoParcelas = novasParcelas;
                     }
                     store.put(cobranca);
                 };
@@ -516,10 +544,12 @@
                     for (let i = 0; i < totalParcelas; i++) {
                         const checado = cobranca.historicoParcelas[i] ? "checked" : "";
                         parcelasHTML += `
-                            <label class="parcela-item">
+                            <div class="parcela-item">
                                 <input type="checkbox" ${checado} onchange="alternarParcela(${cobranca.id}, ${i}, this.checked)">
-                                <span>Parc. ${i + 1} (R$ ${valorCadaParcela})</span>
-                            </label>
+                                <span>Parc. ${i + 1}</span>
+                                <input type="number" value="${valorCadaParcela}" step="0.01" min="0" class="input-valor-parcela" data-cobranca-id="${cobranca.id}" data-parcela-index="${i}">
+                                <button class="btn-editar-parcela" onclick="editarValorParcela(${cobranca.id}, ${i}, this.previousElementSibling.value)">✓</button>
+                            </div>
                         `;
                     }
 
@@ -551,6 +581,44 @@
                 } else if (!temCobrancas) {
                     container.innerHTML = `<p style="text-align: center; color: #7f8c8d;">Nenhuma cobrança registrada.</p>`;
                 }
+            };
+        }
+
+        // --- NOVA FUNÇÃO PARA EDITAR VALOR DA PARCELA ---
+        function editarValorParcela(idCobranca, indiceParcela, novoValor) {
+            const valorNumerico = parseFloat(novoValor) || 0;
+            
+            if (valorNumerico <= 0) {
+                alert("O valor da parcela deve ser maior que zero.");
+                return;
+            }
+
+            const tx = db.transaction(["cobrancas"], "readwrite");
+            const store = tx.objectStore("cobrancas");
+            const pedidoObter = store.get(idCobranca);
+
+            pedidoObter.onsuccess = function() {
+                const cobranca = pedidoObter.result;
+                const totalParcelas = cobranca.historicoParcelas.length;
+                
+                // Calcula o novo valor total baseado no valor da parcela editada
+                const novoValorTotal = valorNumerico * totalParcelas;
+                
+                // Atualiza o valor total e o texto
+                cobranca.valor = novoValorTotal;
+                
+                // Recalcula o texto com os novos valores
+                if (totalParcelas === 1) {
+                    cobranca.texto = `Pagamento à vista no valor de R$ ${novoValorTotal.toFixed(2)}.`;
+                } else {
+                    cobranca.texto = `Valor Total: R$ ${novoValorTotal.toFixed(2)}\nParcelado em ${totalParcelas}x de R$ ${valorNumerico.toFixed(2)} cada parcela.`;
+                }
+                
+                store.put(cobranca);
+            };
+
+            tx.oncomplete = function() {
+                renderizarNotas();
             };
         }
 
