@@ -58,7 +58,7 @@
 
         .row-inputs {
             display: grid;
-            grid-template-columns: 2fr 1.2fr 0.8fr 1.2fr;
+            grid-template-columns: 2fr 1.2fr 1.4fr 1.2fr;
             gap: 12px;
             margin-bottom: 15px;
         }
@@ -478,7 +478,7 @@
             <div class="row-inputs">
                 <input type="text" id="notaTitulo" class="input-titulo" placeholder="Cliente ou Serviço...">
                 <input type="number" id="notaValor" class="input-valor" min="0" step="0.01" placeholder="Valor R$" oninput="calcularParcelasAutomatico()">
-                <input type="number" id="notaParcelas" class="input-parcelas" min="1" value="1" placeholder="Parc." oninput="calcularParcelasAutomatico()">
+                <input type="number" id="notaParcelas" class="input-parcelas" min="1" placeholder="Número de Parcelas" title="Número de Parcelas" oninput="calcularParcelasAutomatico()">
                 <input type="date" id="notaData" class="input-data-principal" title="Data Inicial da Cobrança">
             </div>
             
@@ -504,6 +504,7 @@
             if (window.idEdicaoAtual !== null) return;
 
             const valorTotal = parseFloat(document.getElementById("notaValor").value) || 0;
+            // Caso esteja vazio, assume 1 parcela para o cálculo automático
             const qtdParcelas = parseInt(document.getElementById("notaParcelas").value) || 1;
             const campoTexto = document.getElementById("notaTexto");
 
@@ -606,7 +607,7 @@
         function limparFormulario() {
             document.getElementById("notaTitulo").value = "";
             document.getElementById("notaValor").value = "";
-            document.getElementById("notaParcelas").value = "1";
+            document.getElementById("notaParcelas").value = "";
             document.getElementById("notaTexto").value = "";
             document.getElementById('notaData').valueAsDate = new Date();
             window.idEdicaoAtual = null;
@@ -633,7 +634,7 @@
 
         // --- OPERAÇÕES CRUD ---
 
-        font = function salvarNota() {
+        function salvarNota() {
             const campoTitulo = document.getElementById("notaTitulo");
             const campoValor = document.getElementById("notaValor");
             const campoParcelas = document.getElementById("notaParcelas");
@@ -642,6 +643,7 @@
             
             const titulo = campoTitulo.value.trim();
             const valor = parseFloat(campoValor.value) || 0;
+            // Se salvar sem preencher as parcelas, assume 1 por padrão
             const qtdParcelas = parseInt(campoParcelas.value) || 1;
             const texto = campoTexto.value.trim();
             
@@ -1077,6 +1079,7 @@
             }
         }
 
+        // Correção de erro de digitação da função renderizarNotas
         function escapeHTML(str) {
             const div = document.createElement('div');
             div.textContent = str;
