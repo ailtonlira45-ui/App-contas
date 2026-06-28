@@ -649,7 +649,6 @@
                     cobranca.dataConta = dataFormatada; 
                     cobranca.dataRaw = campoData.value;
                     
-                    // Recria e atualiza a sequência de datas se mudar a quantidade de parcelas ou a data principal
                     cobranca.datasFuturas = gerarListaDeDatas(campoData.value, qtdParcelas);
 
                     if (cobranca.historicoParcelas.length !== qtdParcelas) {
@@ -841,7 +840,6 @@
                 cobranca.historicoParcelas.push(false);
                 cobranca.valoresParcelas.push(valorSugerido);
                 
-                // Adiciona um mês sequencial para a nova parcela adicionada por dentro do card
                 if (cobranca.dataRaw) {
                     const novaListaDatas = gerarListaDeDatas(cobranca.dataRaw, totalAtual + 1);
                     cobranca.datasFuturas.push(novaListaDatas[totalAtual]);
@@ -964,10 +962,11 @@
                 
                 let cronogramaDatas = "";
                 if (cobranca.datasFuturas && cobranca.datasFuturas.length > 0) {
-                    cronogramaDatas = "\n*Vencimentos:*\n";
+                    cronogramaDatas = "\n*Vencimentos e Valores:*\n";
                     cobranca.datasFuturas.forEach((dt, idx) => {
-                        const sit = cobranca.historicoParcelas[idx] ? "✅" : "⏳";
-                        cronogramaDatas += `${idx + 1}ª Parc: ${dt} ${sit}\n`;
+                        const sit = cobranca.historicoParcelas[idx] ? "✅ Pago" : "⏳ Pendente";
+                        const val = cobranca.valoresParcelas[idx] ? cobranca.valoresParcelas[idx].toFixed(2) : "0.00";
+                        cronogramaDatas += `${idx + 1}ª Parc: ${dt} - R$ ${val} (${sit})\n`;
                     });
                 }
                 
