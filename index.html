@@ -25,6 +25,8 @@
         .container {
             width: 100%;
             max-width: 700px;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
@@ -38,7 +40,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Área de Digitação */
+        /* Área de Digitação e Inputs */
         .input-area {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -46,6 +48,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             margin-bottom: 25px;
+            width: 100%;
         }
 
         .row-inputs {
@@ -55,7 +58,7 @@
             margin-bottom: 15px;
         }
 
-        .input-titulo, .input-valor, .input-parcelas {
+        .input-titulo, .input-valor, .input-parcelas, .input-busca {
             width: 100%;
             padding: 14px 18px;
             border: 2px solid #e2e8f0;
@@ -71,10 +74,22 @@
             text-align: center;
         }
 
-        .input-titulo:focus, .input-valor:focus, .input-parcelas:focus {
+        .input-titulo:focus, .input-valor:focus, .input-parcelas:focus, .input-busca:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
             transform: translateY(-1px);
+        }
+
+        /* Barra de Pesquisa Alinhada */
+        .busca-container {
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .input-busca {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
         }
 
         textarea {
@@ -169,6 +184,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            width: 100%;
         }
 
         .nota-card {
@@ -179,6 +195,7 @@
             border-left: 6px solid #e67e22; 
             animation: surgir 0.4s ease;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .nota-card:hover {
@@ -447,6 +464,10 @@
             <div class="dica-comando">Dica de voz: fale <b>"salvar anotação"</b> ou <b>"limpar tudo"</b>.</div>
         </div>
 
+        <div class="busca-container">
+            <input type="text" id="inputBusca" class="input-busca" placeholder="🔍 Pesquisar por cliente ou detalhes da conta..." oninput="filtrarCobranças()">
+        </div>
+
         <div id="notasContainer" class="notas-lista"></div>
     </div>
 
@@ -499,7 +520,7 @@
         let escutando = false;
 
         if (SpeechRecognition) {
-            reconhecimento = new SpeechRecognition();
+            reconhecimento = new Recognition();
             reconhecimento.continuous = true; 
             reconhecimento.lang = 'pt-BR';
 
@@ -725,6 +746,26 @@
                     container.innerHTML = `<p style="text-align: center; color: white; font-size: 1.1rem;">Nenhuma cobrança registrada.</p>`;
                 }
             };
+            
+            // Limpa e aplica o filtro após carregar as notas, mantendo a pesquisa ativa
+            setTimeout(filtrarCobranças, 50);
+        }
+
+        // --- FUNÇÃO DE FILTRO DA BARRA DE PESQUISA ---
+        function filtrarCobranças() {
+            const termoBusca = document.getElementById("inputBusca").value.toLowerCase().trim();
+            const cards = document.getElementsByClassName("nota-card");
+
+            for (let card of cards) {
+                const titulo = card.querySelector(".nota-titulo-exibicao").textContent.toLowerCase();
+                const texto = card.querySelector(".nota-texto").textContent.toLowerCase();
+
+                if (titulo.includes(termoBusca) || texto.includes(termoBusca)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            }
         }
 
         function iniciarEdicaoParcela(idCobranca, indiceParcela) {
@@ -758,7 +799,6 @@
             };
         }
 
-        // --- ATUALIZADO: ALTERAR APENAS O VALOR DA PARCELA SEM MEXER NO VALOR TOTAL ---
         function confirmarEdicaoParcela(idCobranca, indiceParcela) {
             const inputEdicao = document.getElementById(`input-edicao-${idCobranca}-${indiceParcela}`);
             if (!inputEdicao) return;
@@ -778,12 +818,8 @@
                 const cobranca = pedidoObter.result;
                 if (!cobranca) return;
                 
-                // Altera o valor apenas da parcela editada
                 cobranca.valoresParcelas[indiceParcela] = novoValorParcela;
-                
-                // Mantém o cobranca.valor (Valor Total) idêntico e apenas reconstrói o texto
                 recalcularTextoDivida(cobranca);
-                
                 store.put(cobranca);
             };
 
@@ -856,7 +892,6 @@
             };
         }
 
-        // --- RECALCULAR O TEXTO BASEADO NO VALOR TOTAL FIXO E NO QUE FOI PAGO ---
         function recalcularTextoDivida(cobranca) {
             const totalParcelas = cobranca.historicoParcelas.length;
             
