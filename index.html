@@ -758,6 +758,7 @@
             };
         }
 
+        // --- ATUALIZADO: ALTERAR APENAS O VALOR DA PARCELA SEM MEXER NO VALOR TOTAL ---
         function confirmarEdicaoParcela(idCobranca, indiceParcela) {
             const inputEdicao = document.getElementById(`input-edicao-${idCobranca}-${indiceParcela}`);
             if (!inputEdicao) return;
@@ -777,12 +778,10 @@
                 const cobranca = pedidoObter.result;
                 if (!cobranca) return;
                 
+                // Altera o valor apenas da parcela editada
                 cobranca.valoresParcelas[indiceParcela] = novoValorParcela;
                 
-                const novoValorTotal = cobranca.valoresParcelas.reduce((total, valor) => total + valor, 0);
-                cobranca.valor = novoValorTotal;
-                
-                // Recalcular texto da dívida considerando o que já foi pago
+                // Mantém o cobranca.valor (Valor Total) idêntico e apenas reconstrói o texto
                 recalcularTextoDivida(cobranca);
                 
                 store.put(cobranca);
@@ -838,7 +837,6 @@
             };
         }
 
-        // --- ALTERNÁVEL QUE DIMINUI A DÍVIDA NA NOTA ---
         function alternarParcela(idCobranca, indiceParcela, valorChecado) {
             const tx = db.transaction(["cobrancas"], "readwrite");
             const store = tx.objectStore("cobrancas");
@@ -848,10 +846,7 @@
                 const cobranca = pedidoObter.result;
                 if (cobranca) {
                     cobranca.historicoParcelas[indiceParcela] = valorChecado;
-                    
-                    // Atualiza dinamicamente o texto com a redução da dívida
                     recalcularTextoDivida(cobranca);
-                    
                     store.put(cobranca);
                 }
             };
@@ -861,7 +856,7 @@
             };
         }
 
-        // --- FUNÇÃO AUXILIAR PARA RECALCULAR O TEXTO COM O SALDO DEVEDOR ---
+        // --- RECALCULAR O TEXTO BASEADO NO VALOR TOTAL FIXO E NO QUE FOI PAGO ---
         function recalcularTextoDivida(cobranca) {
             const totalParcelas = cobranca.historicoParcelas.length;
             
@@ -904,4 +899,3 @@
     </script>
 </body>
 </html>
-l
