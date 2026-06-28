@@ -53,17 +53,17 @@
 
         .row-inputs {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 2fr 1.2fr 0.8fr 1.2fr;
             gap: 12px;
             margin-bottom: 15px;
         }
 
-        .input-titulo, .input-valor, .input-parcelas, .input-busca {
+        .input-titulo, .input-valor, .input-parcelas, .input-busca, .input-data-principal {
             width: 100%;
-            padding: 14px 18px;
+            padding: 14px 14px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 500;
             outline: none;
             transition: all 0.3s;
@@ -74,7 +74,7 @@
             text-align: center;
         }
 
-        .input-titulo:focus, .input-valor:focus, .input-parcelas:focus, .input-busca:focus {
+        .input-titulo:focus, .input-valor:focus, .input-parcelas:focus, .input-busca:focus, .input-data-principal:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
             transform: translateY(-1px);
@@ -251,7 +251,7 @@
             background: #f8f9fa;
             padding: 15px;
             border-radius: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -261,10 +261,10 @@
         .parcela-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-size: 0.9rem;
             background: white;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 10px;
             border: 1px solid #dee2e6;
             transition: all 0.3s;
@@ -285,7 +285,16 @@
         .parcela-item .parcela-label {
             font-weight: 600;
             color: #2c3e50;
-            min-width: 70px;
+            min-width: 60px;
+        }
+
+        .parcela-item .parcela-data-exibicao {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            background: #f1f3f5;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 500;
         }
 
         .parcela-item .valor-parcela-display {
@@ -293,36 +302,66 @@
             font-weight: 700;
             color: #667eea;
             font-size: 1rem;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .btn-editar-parcela {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-size: 0.8rem;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-editar-parcela:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+        /* Botão de Apagar Parcela */
+        .btn-apagar-parcela {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-apagar-parcela:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        /* Botão Adicionar Parcela Interna */
+        .btn-adicionar-parcela-card {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-adicionar-parcela-card:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
         }
 
         .parcela-item.editando {
             background: #f0f3ff;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .parcela-item .input-edicao-parcela {
-            width: 100px;
-            padding: 8px 12px;
+            width: 90px;
+            padding: 6px 10px;
             border: 2px solid #667eea;
             border-radius: 8px;
             font-size: 0.9rem;
@@ -330,42 +369,30 @@
             margin-left: auto;
             font-weight: 600;
             outline: none;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .btn-confirmar-edicao {
             background: #27ae60;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             font-size: 0.8rem;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
-            margin-right: 5px;
-        }
-
-        .btn-confirmar-edicao:hover {
-            background: #219a52;
-            transform: translateY(-1px);
+            margin-right: 3px;
         }
 
         .btn-cancelar-edicao {
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
             font-size: 0.8rem;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-cancelar-edicao:hover {
-            background: #c0392b;
-            transform: translateY(-1px);
         }
 
         .nota-footer {
@@ -394,35 +421,14 @@
             transition: all 0.3s;
         }
 
-        .btn-zap { 
-            color: #25d366; 
-            border: 2px solid #25d366;
-        }
-        .btn-zap:hover { 
-            background: #25d366; 
-            color: white;
-            transform: translateY(-2px);
-        }
+        .btn-zap { color: #25d366; border: 2px solid #25d366; }
+        .btn-zap:hover { background: #25d366; color: white; transform: translateY(-2px); }
 
-        .btn-editar { 
-            color: #667eea; 
-            border: 2px solid #667eea;
-        }
-        .btn-editar:hover { 
-            background: #667eea; 
-            color: white;
-            transform: translateY(-2px);
-        }
+        .btn-editar { color: #667eea; border: 2px solid #667eea; }
+        .btn-editar:hover { background: #667eea; color: white; transform: translateY(-2px); }
 
-        .btn-excluir { 
-            color: #e74c3c; 
-            border: 2px solid #e74c3c;
-        }
-        .btn-excluir:hover { 
-            background: #e74c3c; 
-            color: white;
-            transform: translateY(-2px);
-        }
+        .btn-excluir { color: #e74c3c; border: 2px solid #e74c3c; }
+        .btn-excluir:hover { background: #e74c3c; color: white; transform: translateY(-2px); }
 
         .dica-comando {
             font-size: 0.85rem;
@@ -453,6 +459,7 @@
                 <input type="text" id="notaTitulo" class="input-titulo" placeholder="Cliente ou Serviço...">
                 <input type="number" id="notaValor" class="input-valor" min="0" step="0.01" placeholder="Valor R$" oninput="calcularParcelasAutomatico()">
                 <input type="number" id="notaParcelas" class="input-parcelas" min="1" value="1" placeholder="Parc." oninput="calcularParcelasAutomatico()">
+                <input type="date" id="notaData" class="input-data-principal" title="Data Inicial da Cobrança">
             </div>
             
             <textarea id="notaTexto" placeholder="Os detalhes do parcelamento aparecerão aqui automaticamente conforme você digita o valor..."></textarea>
@@ -494,6 +501,9 @@
             }
         }
 
+        // Definir data de hoje por padrão ao iniciar o app
+        document.getElementById('notaData').valueAsDate = new Date();
+
         // --- BANCO DE DADOS INDEXEDDB ---
         let db;
         window.idEdicaoAtual = null;
@@ -511,7 +521,7 @@
         };
 
         request.onerror = function() {
-            alert("Erro ao abrir o banco de dados no celular.");
+            alert("Erro ao abrir o banco de dados.");
         };
 
         // --- SISTEMA DE RECONHECIMENTO DE VOZ ---
@@ -520,7 +530,7 @@
         let escutando = false;
 
         if (SpeechRecognition) {
-            reconhecimento = new Recognition();
+            reconhecimento = new SpeechRecognition();
             reconhecimento.continuous = true; 
             reconhecimento.lang = 'pt-BR';
 
@@ -578,8 +588,27 @@
             document.getElementById("notaValor").value = "";
             document.getElementById("notaParcelas").value = "1";
             document.getElementById("notaTexto").value = "";
+            document.getElementById('notaData').valueAsDate = new Date();
             window.idEdicaoAtual = null;
             document.getElementById("btnSalvarPrincipal").innerHTML = "💾 Registrar Cobrança";
+        }
+
+        // --- GERADOR DE DATAS CONSECUTIVAS ---
+        function gerarListaDeDatas(dataInicialStr, totalParcelas) {
+            const lista = [];
+            if (!dataInicialStr) return Array(totalParcelas).fill("");
+            
+            for (let i = 0; i < totalParcelas; i++) {
+                const dataBase = new Date(dataInicialStr + "T00:00:00");
+                dataBase.setMonth(dataBase.getMonth() + i);
+                
+                const dia = String(dataBase.getDate()).padStart(2, '0');
+                const mes = String(dataBase.getMonth() + 1).padStart(2, '0');
+                const ano = dataBase.getFullYear();
+                
+                lista.push(`${dia}/${mes}/${ano}`);
+            }
+            return lista;
         }
 
         // --- OPERAÇÕES CRUD ---
@@ -589,11 +618,18 @@
             const campoValor = document.getElementById("notaValor");
             const campoParcelas = document.getElementById("notaParcelas");
             const campoTexto = document.getElementById("notaTexto");
+            const campoData = document.getElementById("notaData");
             
             const titulo = campoTitulo.value.trim();
             const valor = parseFloat(campoValor.value) || 0;
             const qtdParcelas = parseInt(campoParcelas.value) || 1;
             const texto = campoTexto.value.trim();
+            
+            let dataFormatada = "";
+            if (campoData.value) {
+                const partes = campoData.value.split("-");
+                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
 
             if (titulo === "" || texto === "") {
                 alert("Preencha o cliente e os dados antes de salvar!");
@@ -610,7 +646,12 @@
                     cobranca.titulo = titulo;
                     cobranca.valor = valor;
                     cobranca.texto = texto;
+                    cobranca.dataConta = dataFormatada; 
+                    cobranca.dataRaw = campoData.value;
                     
+                    // Recria e atualiza a sequência de datas se mudar a quantidade de parcelas ou a data principal
+                    cobranca.datasFuturas = gerarListaDeDatas(campoData.value, qtdParcelas);
+
                     if (cobranca.historicoParcelas.length !== qtdParcelas) {
                         const novasParcelas = Array(qtdParcelas).fill(false);
                         for (let i = 0; i < Math.min(cobranca.historicoParcelas.length, qtdParcelas); i++) {
@@ -633,18 +674,21 @@
                 const listaParcelas = Array(qtdParcelas).fill(false);
                 const valorPadraoParcela = valor / qtdParcelas;
                 const valoresParcelas = Array(qtdParcelas).fill(valorPadraoParcela);
+                const datasFuturas = gerarListaDeDatas(campoData.value, qtdParcelas);
                 
                 const agora = new Date();
-                const dataHoraFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + 
-                                         agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
                 const novaCobranca = { 
                     titulo: titulo, 
                     valor: valor,
                     texto: texto, 
-                    dataHora: "Registrado: " + dataHoraFormatada,
+                    dataConta: dataFormatada, 
+                    dataRaw: campoData.value,
+                    dataHora: "Registrado às " + horaFormatada,
                     historicoParcelas: listaParcelas,
-                    valoresParcelas: valoresParcelas
+                    valoresParcelas: valoresParcelas,
+                    datasFuturas: datasFuturas
                 };
                 store.add(novaCobranca);
             }
@@ -677,6 +721,9 @@
                     if (!cobranca.valoresParcelas) {
                         cobranca.valoresParcelas = Array(totalParcelas).fill(cobranca.valor / totalParcelas);
                     }
+                    if (!cobranca.datasFuturas) {
+                        cobranca.datasFuturas = gerarListaDeDatas(cobranca.dataRaw, totalParcelas);
+                    }
 
                     let classeCard = "";
                     let badgeHTML = "";
@@ -704,6 +751,13 @@
                     `;
                     
                     card.innerHTML = headerHTML;
+
+                    // Botão para adicionar mais parcelas diretamente no Card
+                    const btnAddParcela = document.createElement("button");
+                    btnAddParcela.className = "btn-adicionar-parcela-card";
+                    btnAddParcela.innerHTML = "➕ Adicionar Parcela";
+                    btnAddParcela.onclick = function() { adicionarNovaParcelaInterna(cobranca.id); };
+                    card.appendChild(btnAddParcela);
                     
                     const parcelasContainer = document.createElement("div");
                     parcelasContainer.className = "parcelas-container";
@@ -715,12 +769,15 @@
                         
                         const valorParcela = cobranca.valoresParcelas[i].toFixed(2);
                         const checado = cobranca.historicoParcelas[i] ? "checked" : "";
+                        const dataVencimento = cobranca.datasFuturas[i] || "--/--/----";
                         
                         parcelaDiv.innerHTML = `
                             <input type="checkbox" ${checado} onchange="alternarParcela(${cobranca.id}, ${i}, this.checked)">
                             <span class="parcela-label">Parc. ${i + 1}</span>
+                            <span class="parcela-data-exibicao">📅 ${dataVencimento}</span>
                             <span class="valor-parcela-display">R$ ${valorParcela}</span>
-                            <button class="btn-editar-parcela" onclick="iniciarEdicaoParcela(${cobranca.id}, ${i})">✏️ Editar</button>
+                            <button class="btn-editar-parcela" onclick="iniciarEdicaoParcela(${cobranca.id}, ${i})">✏️</button>
+                            <button class="btn-apagar-parcela" onclick="apagarParcelaInterna(${cobranca.id}, ${i})" title="Apagar Parcela">🗑️</button>
                         `;
                         
                         parcelasContainer.appendChild(parcelaDiv);
@@ -728,9 +785,11 @@
                     
                     card.appendChild(parcelasContainer);
                     
+                    const exibicaoData = cobranca.dataConta ? `📅 Início: ${cobranca.dataConta} | ` : "📅 ";
+                    
                     const footerHTML = `
                         <div class="nota-footer">
-                            <span>📅 ${cobranca.dataHora}</span>
+                            <span>${exibicaoData}${cobranca.dataHora}</span>
                             <div class="botoes-card">
                                 <button class="btn-card btn-zap" onclick="compartilharWhatsAppPorID(${cobranca.id})">🟢 Zap</button>
                                 <button class="btn-card btn-editar" onclick="prepararEdicaoPorID(${cobranca.id})">✏️ Editar</button>
@@ -747,11 +806,9 @@
                 }
             };
             
-            // Limpa e aplica o filtro após carregar as notas, mantendo a pesquisa ativa
             setTimeout(filtrarCobranças, 50);
         }
 
-        // --- FUNÇÃO DE FILTRO DA BARRA DE PESQUISA ---
         function filtrarCobranças() {
             const termoBusca = document.getElementById("inputBusca").value.toLowerCase().trim();
             const cards = document.getElementsByClassName("nota-card");
@@ -766,6 +823,64 @@
                     card.style.display = "none";
                 }
             }
+        }
+
+        // --- ADICIONAR MAIS PARCELAS POR DENTRO DO CARD ---
+        function adicionarNovaParcelaInterna(idCobranca) {
+            const tx = db.transaction(["cobrancas"], "readwrite");
+            const store = tx.objectStore("cobrancas");
+            const pedidoObter = store.get(idCobranca);
+
+            pedidoObter.onsuccess = function() {
+                const cobranca = pedidoObter.result;
+                if (!cobranca) return;
+
+                const totalAtual = cobranca.valoresParcelas.length;
+                const valorSugerido = totalAtual > 0 ? (cobranca.valor / totalAtual) : 0;
+
+                cobranca.historicoParcelas.push(false);
+                cobranca.valoresParcelas.push(valorSugerido);
+                
+                // Adiciona um mês sequencial para a nova parcela adicionada por dentro do card
+                if (cobranca.dataRaw) {
+                    const novaListaDatas = gerarListaDeDatas(cobranca.dataRaw, totalAtual + 1);
+                    cobranca.datasFuturas.push(novaListaDatas[totalAtual]);
+                } else {
+                    cobranca.datasFuturas.push("");
+                }
+
+                recalcularTextoDivida(cobranca);
+                store.put(cobranca);
+            };
+
+            tx.oncomplete = function() {
+                renderizarNotas();
+            };
+        }
+
+        // --- APAGAR PARCELA ESPECÍFICA ---
+        function apagarParcelaInterna(idCobranca, indiceParcela) {
+            if (!confirm("Deseja remover esta parcela? O saldo devedor será recalculado.")) return;
+
+            const tx = db.transaction(["cobrancas"], "readwrite");
+            const store = tx.objectStore("cobrancas");
+            const pedidoObter = store.get(idCobranca);
+
+            pedidoObter.onsuccess = function() {
+                const cobranca = pedidoObter.result;
+                if (!cobranca) return;
+
+                cobranca.historicoParcelas.splice(indiceParcela, 1);
+                cobranca.valoresParcelas.splice(indiceParcela, 1);
+                if (cobranca.datasFuturas) cobranca.datasFuturas.splice(indiceParcela, 1);
+
+                recalcularTextoDivida(cobranca);
+                store.put(cobranca);
+            };
+
+            tx.oncomplete = function() {
+                renderizarNotas();
+            };
         }
 
         function iniciarEdicaoParcela(idCobranca, indiceParcela) {
@@ -788,8 +903,8 @@
                     <input type="checkbox" ${estaChecado} disabled>
                     <span class="parcela-label">Parc. ${indiceParcela + 1}</span>
                     <input type="number" class="input-edicao-parcela" value="${valorAtual}" step="0.01" min="0.01" id="input-edicao-${idCobranca}-${indiceParcela}">
-                    <button class="btn-confirmar-edicao" onclick="confirmarEdicaoParcela(${idCobranca}, ${indiceParcela})">✓ Salvar</button>
-                    <button class="btn-cancelar-edicao" onclick="renderizarNotas()">✕ Cancelar</button>
+                    <button class="btn-confirmar-edicao" onclick="confirmarEdicaoParcela(${idCobranca}, ${indiceParcela})">✓</button>
+                    <button class="btn-cancelar-edicao" onclick="renderizarNotas()">✕</button>
                 `;
                 
                 setTimeout(() => {
@@ -847,7 +962,17 @@
                     status = `🟡 Parcial (${pagas} de ${totalParcelas} pagas)`;
                 }
                 
-                const mensagemFormatada = `*Cobrança:* ${cobranca.titulo}\n\n${cobranca.texto}\n\n*Status Atual:* ${status}`;
+                let cronogramaDatas = "";
+                if (cobranca.datasFuturas && cobranca.datasFuturas.length > 0) {
+                    cronogramaDatas = "\n*Vencimentos:*\n";
+                    cobranca.datasFuturas.forEach((dt, idx) => {
+                        const sit = cobranca.historicoParcelas[idx] ? "✅" : "⏳";
+                        cronogramaDatas += `${idx + 1}ª Parc: ${dt} ${sit}\n`;
+                    });
+                }
+                
+                const infoData = cobranca.dataConta ? `*Data de Início:* ${cobranca.dataConta}\n` : "";
+                const mensagemFormatada = `*Cobrança:* ${cobranca.titulo}\n${infoData}\n${cobranca.texto}${cronogramaDatas}\n*Status Atual:* ${status}`;
                 const urlZap = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagemFormatada)}`;
                 window.open(urlZap, '_blank');
             };
@@ -867,6 +992,13 @@
                 document.getElementById("notaValor").value = cobranca.valor;
                 document.getElementById("notaParcelas").value = cobranca.historicoParcelas.length;
                 document.getElementById("notaTexto").value = cobranca.texto;
+                
+                if (cobranca.dataRaw) {
+                    document.getElementById("notaData").value = cobranca.dataRaw;
+                } else {
+                    document.getElementById("notaData").value = "";
+                }
+                
                 document.getElementById("btnSalvarPrincipal").innerHTML = "🔄 Atualizar Dados";
                 document.getElementById("notaTitulo").focus();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -911,7 +1043,7 @@
                     cobranca.texto = `Pagamento à vista no valor de R$ ${cobranca.valor.toFixed(2)}.`;
                 }
             } else {
-                cobranca.texto = `Valor Total: R$ ${cobranca.valor.toFixed(2)}\nParcelado em ${totalParcelas}x.\nJá pago: R$ ${totalPago.toFixed(2)}\nSaldo Restante: R$ ${saldoDevedor.toFixed(2)}`;
+                cobranca.texto = `Valor Total: R$ ${cobranca.valor.toFixed(2)}\nParcelas ativas: ${totalParcelas}\nJá pago: R$ ${totalPago.toFixed(2)}\nSaldo Restante: R$ ${saldoDevedor.toFixed(2)}`;
             }
         }
 
