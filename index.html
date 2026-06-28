@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Cobranças Parceladas Inteligente</title>
+    <title>Minhas Finanças - Modo Conforto</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #2c3e50;
+            background-color: #121214;
+            color: #c4c6d0;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -30,25 +30,30 @@
         }
 
         header {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             text-align: center;
-            color: white;
         }
 
         header h1 {
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        /* Área de Digitação e Inputs */
+        /* Área de Digitação e Inputs (Fundo Escuro Suave) */
         .input-area {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: #1e1e22;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             margin-bottom: 25px;
             width: 100%;
+            border: 1px solid #2a2a30;
         }
 
         .row-inputs {
@@ -60,56 +65,69 @@
 
         .input-titulo, .input-valor, .input-parcelas, .input-busca, .input-data-principal {
             width: 100%;
-            padding: 14px 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 12px 14px;
+            border: 1px solid #3a3a42;
+            border-radius: 10px;
+            font-size: 0.95rem;
             font-weight: 500;
+            color: #f1f5f9;
             outline: none;
-            transition: all 0.3s;
-            background: white;
+            transition: all 0.2s;
+            background: #26262b;
         }
 
         .input-valor, .input-parcelas {
             text-align: center;
         }
 
-        .input-titulo:focus, .input-valor:focus, .input-parcelas:focus, .input-busca:focus, .input-data-principal:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-            transform: translateY(-1px);
+        /* Ajuste do calendário nativo para modo escuro em alguns navegadores */
+        .input-data-principal::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
         }
 
-        /* Barra de Pesquisa Alinhada */
+        .input-titulo:focus, .input-valor:focus, .input-parcelas:focus, .input-busca:focus, .input-data-principal:focus {
+            border-color: #10b981;
+            background: #2a2a32;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Barra de Pesquisa */
         .busca-container {
             margin-bottom: 25px;
             width: 100%;
         }
 
         .input-busca {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            border: 2px solid transparent;
+            background: #1e1e22;
+            border: 1px solid #2a2a30;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .input-busca:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            padding: 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            height: 110px;
+            padding: 14px;
+            border: 1px solid #3a3a42;
+            border-radius: 10px;
             resize: vertical;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             margin-bottom: 15px;
             outline: none;
-            transition: all 0.3s;
-            background: white;
+            transition: all 0.2s;
+            background: #26262b;
+            color: #f1f5f9;
         }
 
         textarea:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-            transform: translateY(-1px);
+            border-color: #10b981;
+            background: #2a2a32;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
         }
 
         .action-buttons {
@@ -121,65 +139,69 @@
         button {
             border: none;
             padding: 14px 24px;
-            font-size: 1rem;
-            border-radius: 12px;
+            font-size: 0.95rem;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            letter-spacing: 0.5px;
         }
 
         .btn-salvar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            background: #10b981;
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
         .btn-salvar:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            background: #34d399;
+            transform: translateY(-1px);
         }
 
         .btn-voz {
-            background: white;
-            color: #667eea;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
+            background: #26262b;
+            color: #94a3b8;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
             padding: 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-size: 1.3rem;
+            border: 1px solid #3a3a42;
+        }
+        
+        .btn-voz:hover {
+            background: #2a2a32;
+            color: #f1f5f9;
         }
 
         .btn-voz.escutando {
-            background: #e74c3c;
+            background: #ef4444;
             color: white;
+            border-color: #ef4444;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         .status-voz {
             font-size: 0.85rem;
-            color: #e74c3c;
+            color: #fca5a5;
             text-align: center;
             margin-bottom: 12px;
             font-weight: 600;
             display: none;
-            background: #fde8e8;
+            background: #7f1d1d;
             padding: 8px;
             border-radius: 8px;
         }
 
-        /* Lista de Cobranças */
+        /* Cards de Cobrança Muted */
         .notas-lista {
             display: flex;
             flex-direction: column;
@@ -188,25 +210,29 @@
         }
 
         .nota-card {
-            background: white;
+            background: #1e1e22;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border-left: 6px solid #e67e22; 
-            animation: surgir 0.4s ease;
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            border-top: 4px solid #f59e0b; 
+            border-left: 1px solid #2a2a30;
+            border-right: 1px solid #2a2a30;
+            border-bottom: 1px solid #2a2a30;
+            animation: surgir 0.3s ease-out;
+            transition: all 0.2s ease;
             width: 100%;
         }
 
         .nota-card:hover {
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .nota-card.parcial { border-left-color: #f1c40f; background: #fffef5; }
-        .nota-card.pago { border-left-color: #27ae60; background: #f0faf4; }
+        .nota-card.parcial { border-top-color: #38bdf8; }
+        .nota-card.pago { border-top-color: #10b981; }
 
         @keyframes surgir {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -218,180 +244,175 @@
         }
 
         .nota-titulo-exibicao {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #1a252f;
+            color: #f1f5f9;
         }
 
-        /* Badges */
+        /* Badges de Status Confortáveis */
         .badge-status {
-            padding: 6px 14px;
-            font-size: 0.8rem;
+            padding: 4px 10px;
+            font-size: 0.75rem;
             font-weight: 700;
-            border-radius: 25px;
+            border-radius: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .status-pendente { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
-        .status-parcial { background: #fff9e6; color: #856404; border: 1px solid #f1c40f; }
-        .status-pago { background: #d4edda; color: #155724; border: 1px solid #27ae60; }
+        .status-pendente { background: #451a03; color: #fef3c7; }
+        .status-parcial { background: #0c4a6e; color: #e0f2fe; }
+        .status-pago { background: #064e3b; color: #d1fae5; }
 
         .nota-texto {
-            font-size: 1.05rem;
-            line-height: 1.7;
+            font-size: 0.95rem;
+            line-height: 1.6;
             margin-bottom: 20px;
             white-space: pre-wrap;
             word-break: break-word;
-            color: #2c3e50;
+            color: #94a3b8;
         }
 
-        /* Parcelas Dentro do Card */
+        /* Containers de Parcelas */
         .parcelas-container {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
+            background: #17171c;
+            padding: 12px;
+            border-radius: 10px;
             margin-bottom: 15px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            border: 1px solid #e9ecef;
+            gap: 8px;
+            border: 1px solid #26262b;
         }
 
         .parcela-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 0.9rem;
-            background: white;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-            transition: all 0.3s;
-        }
-
-        .parcela-item:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            font-size: 0.85rem;
+            background: #202024;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #2d2d34;
+            transition: all 0.2s;
         }
 
         .parcela-item input[type="checkbox"] {
             cursor: pointer;
-            width: 18px;
-            height: 18px;
-            accent-color: #667eea;
+            width: 16px;
+            height: 16px;
+            accent-color: #10b981;
         }
 
         .parcela-item .parcela-label {
             font-weight: 600;
-            color: #2c3e50;
-            min-width: 60px;
+            color: #cbd5e1;
+            min-width: 55px;
         }
 
         .parcela-item .parcela-data-exibicao {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            background: #f1f3f5;
-            padding: 2px 8px;
-            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            background: #2a2a32;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-weight: 500;
         }
 
         .parcela-item .valor-parcela-display {
             margin-left: auto;
             font-weight: 700;
-            color: #667eea;
-            font-size: 1rem;
+            color: #e2e8f0;
+            font-size: 0.95rem;
             margin-right: 5px;
         }
 
         .btn-editar-parcela {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            background: #2a2a32;
+            color: #94a3b8;
+            border: 1px solid #3a3a42;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
+        }
+        
+        .btn-editar-parcela:hover {
+            background: #3a3a42;
+            color: #f1f5f9;
         }
 
-        /* Botão de Apagar Parcela */
         .btn-apagar-parcela {
-            background: #e74c3c;
-            color: white;
+            background: #451a03;
+            color: #fca5a5;
             border: none;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             cursor: pointer;
-            transition: all 0.3s;
         }
         .btn-apagar-parcela:hover {
-            background: #c0392b;
-            transform: scale(1.05);
+            background: #7c2d12;
         }
 
-        /* Botão Adicionar Parcela Interna */
         .btn-adicionar-parcela-card {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
+            background: #202024;
+            color: #94a3b8;
+            border: 1px dashed #3a3a42;
+            padding: 8px 12px;
             border-radius: 10px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             margin-bottom: 20px;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 5px;
         }
         .btn-adicionar-parcela-card:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
+            background: #2a2a32;
+            color: #f1f5f9;
+            border-color: #4b5563;
         }
 
         .parcela-item.editando {
-            background: #f0f3ff;
-            border-color: #667eea;
+            background: #064e3b;
+            border-color: #10b981;
         }
 
         .parcela-item .input-edicao-parcela {
-            width: 90px;
-            padding: 6px 10px;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            width: 85px;
+            padding: 4px 8px;
+            border: 2px solid #10b981;
+            border-radius: 6px;
+            font-size: 0.85rem;
             text-align: center;
             margin-left: auto;
             font-weight: 600;
             outline: none;
+            background: #17171c;
+            color: #fff;
             margin-right: 5px;
         }
 
         .btn-confirmar-edicao {
-            background: #27ae60;
-            color: white;
+            background: #10b981;
+            color: #0f172a;
             border: none;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
             margin-right: 3px;
         }
 
         .btn-cancelar-edicao {
-            background: #e74c3c;
+            background: #ef4444;
             color: white;
             border: none;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
@@ -399,9 +420,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
-            color: #6c757d;
-            border-top: 2px solid #f1f3f5;
+            font-size: 0.8rem;
+            color: #64748b;
+            border-top: 1px solid #26262b;
             padding-top: 15px;
             flex-wrap: wrap;
             gap: 10px;
@@ -414,25 +435,24 @@
 
         .btn-card {
             background: none;
-            padding: 8px 16px;
-            font-size: 0.85rem;
-            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
             font-weight: 600;
-            transition: all 0.3s;
         }
 
-        .btn-zap { color: #25d366; border: 2px solid #25d366; }
-        .btn-zap:hover { background: #25d366; color: white; transform: translateY(-2px); }
+        .btn-zap { color: #4ade80; border: 1px solid #22c55e; background: rgba(34, 197, 94, 0.1); }
+        .btn-zap:hover { background: #22c55e; color: #0f172a; }
 
-        .btn-editar { color: #667eea; border: 2px solid #667eea; }
-        .btn-editar:hover { background: #667eea; color: white; transform: translateY(-2px); }
+        .btn-editar { color: #60a5fa; border: 1px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .btn-editar:hover { background: #3b82f6; color: #0f172a; }
 
-        .btn-excluir { color: #e74c3c; border: 2px solid #e74c3c; }
-        .btn-excluir:hover { background: #e74c3c; color: white; transform: translateY(-2px); }
+        .btn-excluir { color: #f87171; border: 1px solid #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .btn-excluir:hover { background: #ef4444; color: white; }
 
         .dica-comando {
-            font-size: 0.85rem;
-            color: #6c757d;
+            font-size: 0.8rem;
+            color: #64748b;
             text-align: center;
             margin-top: 10px;
             font-weight: 500;
@@ -449,7 +469,7 @@
 
     <div class="container">
         <header>
-            <h1>📝 Cobranças Inteligentes</h1>
+            <h1>💼 Minhas Finanças</h1>
         </header>
 
         <div class="input-area">
@@ -613,7 +633,7 @@
 
         // --- OPERAÇÕES CRUD ---
 
-        function salvarNota() {
+        font = function salvarNota() {
             const campoTitulo = document.getElementById("notaTitulo");
             const campoValor = document.getElementById("notaValor");
             const campoParcelas = document.getElementById("notaParcelas");
@@ -801,7 +821,7 @@
                     container.appendChild(card);
                     cursor.continue();
                 } else if (!temCobrancas) {
-                    container.innerHTML = `<p style="text-align: center; color: white; font-size: 1.1rem;">Nenhuma cobrança registrada.</p>`;
+                    container.innerHTML = `<p style="text-align: center; color: #94a3b8; font-size: 1.1rem;">Nenhuma cobrança registrada.</p>`;
                 }
             };
             
