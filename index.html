@@ -212,8 +212,8 @@
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 15px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 8px;
             border: 1px solid #e2e8f0;
         }
@@ -221,10 +221,10 @@
         .parcela-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-size: 0.85rem;
             background: #fff;
-            padding: 6px 8px;
+            padding: 8px 10px;
             border-radius: 6px;
             border: 1px solid #e2e8f0;
             font-weight: 500;
@@ -236,29 +236,74 @@
             height: 16px;
         }
 
-        .parcela-item input[type="number"] {
-            width: 80px;
-            padding: 4px 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            text-align: center;
+        .parcela-item span {
+            min-width: 60px;
+        }
+
+        .parcela-item .valor-parcela-display {
+            margin-left: auto;
+            font-weight: bold;
+            color: #2c3e50;
         }
 
         .btn-editar-parcela {
             background: #3498db;
             color: white;
             border: none;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.75rem;
             cursor: pointer;
             font-weight: bold;
-            margin-left: auto;
         }
 
         .btn-editar-parcela:hover {
             background: #2980b9;
+        }
+
+        .parcela-item.editando {
+            background: #ebf5fb;
+            border-color: #3498db;
+        }
+
+        .parcela-item .input-edicao-parcela {
+            width: 90px;
+            padding: 4px 8px;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-left: auto;
+        }
+
+        .parcela-item .btn-confirmar-edicao {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .parcela-item .btn-confirmar-edicao:hover {
+            background: #27ae60;
+        }
+
+        .parcela-item .btn-cancelar-edicao {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .parcela-item .btn-cancelar-edicao:hover {
+            background: #c0392b;
         }
 
         .nota-footer {
@@ -482,16 +527,30 @@
                         }
                         cobranca.historicoParcelas = novasParcelas;
                     }
+                    // Se existir valoresParcelas, ajusta também
+                    if (cobranca.valoresParcelas && cobranca.valoresParcelas.length !== qtdParcelas) {
+                        const novosValores = Array(qtdParcelas).fill(valor / qtdParcelas);
+                        for (let i = 0; i < Math.min(cobranca.valoresParcelas.length, qtdParcelas); i++) {
+                            novosValores[i] = cobranca.valoresParcelas[i];
+                        }
+                        cobranca.valoresParcelas = novosValores;
+                    } else if (!cobranca.valoresParcelas) {
+                        cobranca.valoresParcelas = Array(qtdParcelas).fill(valor / qtdParcelas);
+                    }
                     store.put(cobranca);
                 };
             } else {
                 const listaParcelas = Array(qtdParcelas).fill(false);
+                const valorPadraoParcela = valor / qtdParcelas;
+                const valoresParcelas = Array(qtdParcelas).fill(valorPadraoParcela);
+                
                 const novaCobranca = { 
                     titulo: titulo, 
                     valor: valor,
                     texto: texto, 
                     dataHora: "Registrado: " + dataHoraFormatada,
-                    historicoParcelas: listaParcelas
+                    historicoParcelas: listaParcelas,
+                    valoresParcelas: valoresParcelas
                 };
                 store.add(novaCobranca);
             }
@@ -521,7 +580,10 @@
                     const totalParcelas = cobranca.historicoParcelas.length;
                     const pagas = cobranca.historicoParcelas.filter(p => p === true).length;
                     
-                    const valorCadaParcela = totalParcelas > 0 ? (cobranca.valor / totalParcelas).toFixed(2) : "0.00";
+                    // Inicializa valoresParcelas se não existir (para compatibilidade com dados antigos)
+                    if (!cobranca.valoresParcelas) {
+                        cobranca.valoresParcelas = Array(totalParcelas).fill(cobranca.valor / totalParcelas);
+                    }
 
                     let classeCard = "";
                     let badgeHTML = "";
@@ -543,12 +605,14 @@
                     let parcelasHTML = "";
                     for (let i = 0; i < totalParcelas; i++) {
                         const checado = cobranca.historicoParcelas[i] ? "checked" : "";
+                        const valorParcela = cobranca.valoresParcelas[i].toFixed(2);
+                        
                         parcelasHTML += `
-                            <div class="parcela-item">
+                            <div class="parcela-item" id="parcela-${cobranca.id}-${i}">
                                 <input type="checkbox" ${checado} onchange="alternarParcela(${cobranca.id}, ${i}, this.checked)">
                                 <span>Parc. ${i + 1}</span>
-                                <input type="number" value="${valorCadaParcela}" step="0.01" min="0" class="input-valor-parcela" data-cobranca-id="${cobranca.id}" data-parcela-index="${i}">
-                                <button class="btn-editar-parcela" onclick="editarValorParcela(${cobranca.id}, ${i}, this.previousElementSibling.value)">✓</button>
+                                <span class="valor-parcela-display">R$ ${valorParcela}</span>
+                                <button class="btn-editar-parcela" onclick="iniciarEdicaoParcela(${cobranca.id}, ${i})">✏️ Editar</button>
                             </div>
                         `;
                     }
@@ -584,11 +648,38 @@
             };
         }
 
-        // --- NOVA FUNÇÃO PARA EDITAR VALOR DA PARCELA ---
-        function editarValorParcela(idCobranca, indiceParcela, novoValor) {
-            const valorNumerico = parseFloat(novoValor) || 0;
-            
-            if (valorNumerico <= 0) {
+        // --- FUNÇÃO PARA INICIAR EDIÇÃO DE UMA PARCELA ESPECÍFICA ---
+        function iniciarEdicaoParcela(idCobranca, indiceParcela) {
+            const parcelaDiv = document.getElementById(`parcela-${idCobranca}-${indiceParcela}`);
+            if (!parcelaDiv) return;
+
+            const tx = db.transaction(["cobrancas"], "readonly");
+            const store = tx.objectStore("cobrancas");
+            const pedidoObter = store.get(idCobranca);
+
+            pedidoObter.onsuccess = function() {
+                const cobranca = pedidoObter.result;
+                const valorAtual = cobranca.valoresParcelas[indiceParcela].toFixed(2);
+
+                parcelaDiv.classList.add("editando");
+                parcelaDiv.innerHTML = `
+                    <input type="checkbox" ${cobranca.historicoParcelas[indiceParcela] ? "checked" : ""} disabled>
+                    <span>Parc. ${indiceParcela + 1}</span>
+                    <input type="number" class="input-edicao-parcela" value="${valorAtual}" step="0.01" min="0.01" id="input-edicao-${idCobranca}-${indiceParcela}">
+                    <button class="btn-confirmar-edicao" onclick="confirmarEdicaoParcela(${idCobranca}, ${indiceParcela})">✓ Salvar</button>
+                    <button class="btn-cancelar-edicao" onclick="cancelarEdicaoParcela(${idCobranca}, ${indiceParcela})">✕ Cancelar</button>
+                `;
+            };
+        }
+
+        // --- FUNÇÃO PARA CONFIRMAR EDIÇÃO DA PARCELA ---
+        function confirmarEdicaoParcela(idCobranca, indiceParcela) {
+            const inputEdicao = document.getElementById(`input-edicao-${idCobranca}-${indiceParcela}`);
+            if (!inputEdicao) return;
+
+            const novoValorParcela = parseFloat(inputEdicao.value) || 0;
+
+            if (novoValorParcela <= 0) {
                 alert("O valor da parcela deve ser maior que zero.");
                 return;
             }
@@ -599,19 +690,21 @@
 
             pedidoObter.onsuccess = function() {
                 const cobranca = pedidoObter.result;
-                const totalParcelas = cobranca.historicoParcelas.length;
                 
-                // Calcula o novo valor total baseado no valor da parcela editada
-                const novoValorTotal = valorNumerico * totalParcelas;
+                // Atualiza apenas o valor desta parcela específica
+                cobranca.valoresParcelas[indiceParcela] = novoValorParcela;
                 
-                // Atualiza o valor total e o texto
+                // Recalcula o valor total baseado em TODAS as parcelas
+                const novoValorTotal = cobranca.valoresParcelas.reduce((total, valor) => total + valor, 0);
                 cobranca.valor = novoValorTotal;
                 
-                // Recalcula o texto com os novos valores
+                // Atualiza o texto baseado no NOVO valor total
+                const totalParcelas = cobranca.historicoParcelas.length;
                 if (totalParcelas === 1) {
                     cobranca.texto = `Pagamento à vista no valor de R$ ${novoValorTotal.toFixed(2)}.`;
                 } else {
-                    cobranca.texto = `Valor Total: R$ ${novoValorTotal.toFixed(2)}\nParcelado em ${totalParcelas}x de R$ ${valorNumerico.toFixed(2)} cada parcela.`;
+                    const valorMedio = (novoValorTotal / totalParcelas).toFixed(2);
+                    cobranca.texto = `Valor Total: R$ ${novoValorTotal.toFixed(2)}\nParcelado em ${totalParcelas}x de aproximadamente R$ ${valorMedio} cada parcela.`;
                 }
                 
                 store.put(cobranca);
@@ -620,6 +713,11 @@
             tx.oncomplete = function() {
                 renderizarNotas();
             };
+        }
+
+        // --- FUNÇÃO PARA CANCELAR EDIÇÃO DA PARCELA ---
+        function cancelarEdicaoParcela(idCobranca, indiceParcela) {
+            renderizarNotas();
         }
 
         // --- FUNÇÃO EXCLUSIVA COMPARTILHAR WHATSAPP ---
