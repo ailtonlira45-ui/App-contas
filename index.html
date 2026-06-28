@@ -453,7 +453,6 @@
     <script>
         // --- FUNÇÃO DE CÁLCULO AUTOMÁTICO ---
         function calcularParcelasAutomatico() {
-            // Se estiver editando, não sobrescreve os valores customizados digitados
             if (window.idEdicaoAtual !== null) return;
 
             const valorTotal = parseFloat(document.getElementById("notaValor").value) || 0;
@@ -783,12 +782,8 @@
                 const novoValorTotal = cobranca.valoresParcelas.reduce((total, valor) => total + valor, 0);
                 cobranca.valor = novoValorTotal;
                 
-                const totalParcelas = cobranca.historicoParcelas.length;
-                if (totalParcelas === 1) {
-                    cobranca.texto = `Pagamento à vista no valor de R$ ${novoValorTotal.toFixed(2)}.`;
-                } else {
-                    cobranca.texto = `Valor Total: R$ ${novoValorTotal.toFixed(2)}\nParcelado em ${totalParcelas}x.`;
-                }
+                // Recalcular texto da dívida considerando o que já foi pago
+                recalcularTextoDivida(cobranca);
                 
                 store.put(cobranca);
             };
@@ -843,6 +838,7 @@
             };
         }
 
+        // --- ALTERNÁVEL QUE DIMINUI A DÍVIDA NA NOTA ---
         function alternarParcela(idCobranca, indiceParcela, valorChecado) {
             const tx = db.transaction(["cobrancas"], "readwrite");
             const store = tx.objectStore("cobrancas");
@@ -852,6 +848,10 @@
                 const cobranca = pedidoObter.result;
                 if (cobranca) {
                     cobranca.historicoParcelas[indiceParcela] = valorChecado;
+                    
+                    // Atualiza dinamicamente o texto com a redução da dívida
+                    recalcularTextoDivida(cobranca);
+                    
                     store.put(cobranca);
                 }
             };
@@ -859,6 +859,30 @@
             tx.oncomplete = function() {
                 renderizarNotas();
             };
+        }
+
+        // --- FUNÇÃO AUXILIAR PARA RECALCULAR O TEXTO COM O SALDO DEVEDOR ---
+        function recalcularTextoDivida(cobranca) {
+            const totalParcelas = cobranca.historicoParcelas.length;
+            
+            let totalPago = 0;
+            for (let i = 0; i < totalParcelas; i++) {
+                if (cobranca.historicoParcelas[i] === true) {
+                    totalPago += cobranca.valoresParcelas[i];
+                }
+            }
+            
+            const saldoDevedor = Math.max(0, cobranca.valor - totalPago);
+
+            if (totalParcelas === 1) {
+                if (saldoDevedor === 0) {
+                    cobranca.texto = `Pagamento à vista no valor de R$ ${cobranca.valor.toFixed(2)}.\nStatus: Totalmente Pago.`;
+                } else {
+                    cobranca.texto = `Pagamento à vista no valor de R$ ${cobranca.valor.toFixed(2)}.`;
+                }
+            } else {
+                cobranca.texto = `Valor Total: R$ ${cobranca.valor.toFixed(2)}\nParcelado em ${totalParcelas}x.\nJá pago: R$ ${totalPago.toFixed(2)}\nSaldo Restante: R$ ${saldoDevedor.toFixed(2)}`;
+            }
         }
 
         function excluirNota(id) {
@@ -880,3 +904,4 @@
     </script>
 </body>
 </html>
+l
